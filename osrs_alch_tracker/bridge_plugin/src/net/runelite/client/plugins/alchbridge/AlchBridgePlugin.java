@@ -223,7 +223,7 @@ public class AlchBridgePlugin extends Plugin {
         // Create in-game sidebar panel
         panel = new AlchBridgePanel(this);
         navButton = NavigationButton.builder()
-            .tooltip("Alch Tracker - Top 10 Flips")
+            .tooltip("AlchMate")
             .icon(createIcon())
             .priority(6)
             .panel(panel)
