@@ -48,6 +48,15 @@ DEFAULT_CONFIG = {
     "hide_maxed_cooldown": True,
     "price_basis": "5m", # '5m' (Volume-Weighted Avg) or 'latest' (1-Trade Tick)
     "min_alert_5m_vol": 3, # Minimum 5m sell volume required to trigger a price change alert
+    "alch_type_rune": True,
+    "alch_type_addy": True,
+    "alch_type_mith": True,
+    "alch_type_dragon": True,
+    "alch_type_jewel": True,
+    "alch_type_bows": True,
+    "alch_type_staves": True,
+    "alch_type_barrows": True,
+    "alch_type_other": True,
     "monitored_character": "All Accounts",
     "last_seen_version": "1.0.0",
     "update_channel": "test" if not getattr(sys, "frozen", False) else "stable",

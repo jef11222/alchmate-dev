@@ -823,6 +823,17 @@ class OSRSAlchDashboard(tk.Tk):
 
         self.bridge_port = int(self.state.config.get("bridge_port", 18833))
 
+        # Alch item type filters (Checkboxes / vinkjes)
+        self.var_type_rune = tk.BooleanVar(value=self.state.config.get("alch_type_rune", True))
+        self.var_type_addy = tk.BooleanVar(value=self.state.config.get("alch_type_addy", True))
+        self.var_type_mith = tk.BooleanVar(value=self.state.config.get("alch_type_mith", True))
+        self.var_type_dragon = tk.BooleanVar(value=self.state.config.get("alch_type_dragon", True))
+        self.var_type_jewel = tk.BooleanVar(value=self.state.config.get("alch_type_jewel", True))
+        self.var_type_bows = tk.BooleanVar(value=self.state.config.get("alch_type_bows", True))
+        self.var_type_staves = tk.BooleanVar(value=self.state.config.get("alch_type_staves", True))
+        self.var_type_barrows = tk.BooleanVar(value=self.state.config.get("alch_type_barrows", True))
+        self.var_type_other = tk.BooleanVar(value=self.state.config.get("alch_type_other", True))
+
         self.setup_styles()
         self.build_ui()
 
@@ -1577,6 +1588,64 @@ class OSRSAlchDashboard(tk.Tk):
             self.btn_sub_act_alerts.config(bg="#f39c12", fg="#000000")
 
     def build_alch_tab(self):
+        alch_filter_strip = tk.Frame(self.tab_alch, bg="#202023", padx=8, pady=4, relief="solid", borderwidth=1)
+        alch_filter_strip.pack(fill="x", pady=(2, 4))
+
+        tk.Label(alch_filter_strip, text="🏷️ Item Types:", font=("Segoe UI", 9, "bold"), fg="#f39c12", bg="#202023").pack(side="left", padx=(0, 6))
+
+        cb_rune = tk.Checkbutton(alch_filter_strip, text="🛡️ Rune", variable=self.var_type_rune, command=self.on_alch_type_filter_changed,
+                                 bg="#202023", fg="#3498db", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#3498db", font=("Segoe UI", 9, "bold"))
+        cb_rune.pack(side="left", padx=2)
+        ToolTip(cb_rune, "Toggle Rune weapons, armor, tools, and equipment.")
+
+        cb_addy = tk.Checkbutton(alch_filter_strip, text="⚔️ Adamant", variable=self.var_type_addy, command=self.on_alch_type_filter_changed,
+                                 bg="#202023", fg="#27ae60", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#27ae60", font=("Segoe UI", 9, "bold"))
+        cb_addy.pack(side="left", padx=2)
+        ToolTip(cb_addy, "Toggle Adamant weapons, armor, and equipment.")
+
+        cb_mith = tk.Checkbutton(alch_filter_strip, text="🗡️ Mithril", variable=self.var_type_mith, command=self.on_alch_type_filter_changed,
+                                 bg="#202023", fg="#5dade2", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#5dade2", font=("Segoe UI", 9, "bold"))
+        cb_mith.pack(side="left", padx=2)
+        ToolTip(cb_mith, "Toggle Mithril weapons, armor, and equipment.")
+
+        cb_dragon = tk.Checkbutton(alch_filter_strip, text="🐉 Dragon", variable=self.var_type_dragon, command=self.on_alch_type_filter_changed,
+                                   bg="#202023", fg="#e74c3c", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#e74c3c", font=("Segoe UI", 9, "bold"))
+        cb_dragon.pack(side="left", padx=2)
+        ToolTip(cb_dragon, "Toggle Dragon weapons, armor, and equipment.")
+
+        cb_jewel = tk.Checkbutton(alch_filter_strip, text="💍 Jewellery", variable=self.var_type_jewel, command=self.on_alch_type_filter_changed,
+                                  bg="#202023", fg="#f1c40f", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#f1c40f", font=("Segoe UI", 9, "bold"))
+        cb_jewel.pack(side="left", padx=2)
+        ToolTip(cb_jewel, "Toggle Gold/Silver jewellery, bracelets, amulets, rings, and necklaces.")
+
+        cb_bows = tk.Checkbutton(alch_filter_strip, text="🏹 Bows & Ammo", variable=self.var_type_bows, command=self.on_alch_type_filter_changed,
+                                 bg="#202023", fg="#2ecc71", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#2ecc71", font=("Segoe UI", 9, "bold"))
+        cb_bows.pack(side="left", padx=2)
+        ToolTip(cb_bows, "Toggle Bows, Crossbows, Shields, Bolts, and Ammunition.")
+
+        cb_staves = tk.Checkbutton(alch_filter_strip, text="✨ Staves / Robes", variable=self.var_type_staves, command=self.on_alch_type_filter_changed,
+                                   bg="#202023", fg="#9b59b6", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#9b59b6", font=("Segoe UI", 9, "bold"))
+        cb_staves.pack(side="left", padx=2)
+        ToolTip(cb_staves, "Toggle Battlestaves, Mystic gear, and Magic robes.")
+
+        cb_barrows = tk.Checkbutton(alch_filter_strip, text="⚰️ Barrows / High", variable=self.var_type_barrows, command=self.on_alch_type_filter_changed,
+                                    bg="#202023", fg="#e67e22", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#e67e22", font=("Segoe UI", 9, "bold"))
+        cb_barrows.pack(side="left", padx=2)
+        ToolTip(cb_barrows, "Toggle Barrows equipment, Obsidian, and Granite armor.")
+
+        cb_other = tk.Checkbutton(alch_filter_strip, text="📦 Other", variable=self.var_type_other, command=self.on_alch_type_filter_changed,
+                                  bg="#202023", fg="#bdc3c7", selectcolor="#2d2d30", activebackground="#202023", activeforeground="#bdc3c7", font=("Segoe UI", 9, "bold"))
+        cb_other.pack(side="left", padx=2)
+        ToolTip(cb_other, "Toggle all other items (D'hide armor, Leather, Robes, Seeds, misc alchables).")
+
+        btn_all = tk.Button(alch_filter_strip, text="All", command=self.select_all_alch_type_filters, bg="#2d2d30", fg="#f1f1f1", relief="flat", padx=6, font=("Segoe UI", 8), cursor="hand2")
+        btn_all.pack(side="left", padx=(8, 2))
+        ToolTip(btn_all, "Check all item type categories.")
+
+        btn_none = tk.Button(alch_filter_strip, text="None", command=self.clear_all_alch_type_filters, bg="#2d2d30", fg="#888888", relief="flat", padx=6, font=("Segoe UI", 8), cursor="hand2")
+        btn_none.pack(side="left", padx=2)
+        ToolTip(btn_none, "Uncheck all item type categories.")
+
         container = ttk.Frame(self.tab_alch)
         container.pack(fill="both", expand=True)
 
@@ -6741,6 +6810,53 @@ class OSRSAlchDashboard(tk.Tk):
         except Exception:
             pass
 
+    def on_alch_type_filter_changed(self):
+        self.state.config["alch_type_rune"] = self.var_type_rune.get()
+        self.state.config["alch_type_addy"] = self.var_type_addy.get()
+        self.state.config["alch_type_mith"] = self.var_type_mith.get()
+        self.state.config["alch_type_dragon"] = self.var_type_dragon.get()
+        self.state.config["alch_type_jewel"] = self.var_type_jewel.get()
+        self.state.config["alch_type_bows"] = self.var_type_bows.get()
+        self.state.config["alch_type_staves"] = self.var_type_staves.get()
+        self.state.config["alch_type_barrows"] = self.var_type_barrows.get()
+        self.state.config["alch_type_other"] = self.var_type_other.get()
+        self.state.save_config()
+        self.recalculate_alch_table()
+
+    def select_all_alch_type_filters(self):
+        for var in (self.var_type_rune, self.var_type_addy, self.var_type_mith,
+                    self.var_type_dragon, self.var_type_jewel, self.var_type_bows,
+                    self.var_type_staves, self.var_type_barrows, self.var_type_other):
+            var.set(True)
+        self.on_alch_type_filter_changed()
+
+    def clear_all_alch_type_filters(self):
+        for var in (self.var_type_rune, self.var_type_addy, self.var_type_mith,
+                    self.var_type_dragon, self.var_type_jewel, self.var_type_bows,
+                    self.var_type_staves, self.var_type_barrows, self.var_type_other):
+            var.set(False)
+        self.on_alch_type_filter_changed()
+
+    def matches_alch_type_filter(self, item_name: str) -> bool:
+        name = item_name.lower()
+        if "rune " in name or name.startswith("rune ") or "runite" in name:
+            return self.var_type_rune.get()
+        if "adamant " in name or name.startswith("adamant ") or "addy " in name or "adamantite" in name:
+            return self.var_type_addy.get()
+        if "mithril " in name or name.startswith("mithril ") or "mith " in name:
+            return self.var_type_mith.get()
+        if "dragon " in name or name.startswith("dragon "):
+            return self.var_type_dragon.get()
+        if any(w in name for w in ("bracelet", "necklace", "amulet", "ring", "tiara", "zenyte", "onyx", "diamond", "ruby", "emerald", "sapphire")):
+            return self.var_type_jewel.get()
+        if any(w in name for w in ("longbow", "shortbow", "comp bow", "crossbow", "bolts", "arrow", "dart", "javelin", "thrownaxe")):
+            return self.var_type_bows.get()
+        if any(w in name for w in ("battlestaff", "mystic", "staff", "wand", "robe", "hood", "robes")):
+            return self.var_type_staves.get()
+        if any(w in name for w in ("dharok", "guthan", "karil", "torag", "ahrim", "verac", "obsidian", "granite")):
+            return self.var_type_barrows.get()
+        return self.var_type_other.get()
+
     def recalculate_alch_table(self):
         nat_cost = self.get_effective_nature_price()
         strat = self.var_strat.get().split()[0]
@@ -6775,6 +6891,9 @@ class OSRSAlchDashboard(tk.Tk):
                 continue
 
             if search_query and search_query not in mdata["name"].lower():
+                continue
+
+            if not self.matches_alch_type_filter(mdata["name"]):
                 continue
 
             is_mem = mdata.get("members", False)
