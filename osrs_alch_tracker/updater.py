@@ -18,7 +18,7 @@ GITHUB_REPO = "jef11222/osrs-alch-tracker"
 
 RELEASES_API_URL = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
 
-def is_safe_https_url(url, allowed_domains=("github.com", "objects.githubusercontent.com", "api.github.com")):
+def is_safe_https_url(url, allowed_domains=("github.com", "objects.githubusercontent.com", "api.github.com", "release-assets.githubusercontent.com")):
     """Validates that a URL strictly uses HTTPS and originates from trusted GitHub domains."""
     try:
         parsed = urllib.parse.urlparse(str(url))
@@ -94,9 +94,7 @@ def check_for_updates(current_version=APP_VERSION, channel="stable", custom_repo
 
                     for asset in data.get("assets", []):
                         name = asset.get("name", "").lower()
-                        cand_url = asset.get("url") if token else asset.get("browser_download_url")
-                        if not cand_url:
-                            cand_url = asset.get("browser_download_url")
+                        cand_url = asset.get("browser_download_url") or asset.get("url")
                         if not is_safe_https_url(cand_url):
                             continue
                         if name == curr_name:
@@ -129,9 +127,7 @@ def check_for_updates(current_version=APP_VERSION, channel="stable", custom_repo
                             latest_rel = all_data[0]
                             tag_name = latest_rel.get("tag_name", "")
                             for asset in latest_rel.get("assets", []):
-                                cand_url = asset.get("url") if token else asset.get("browser_download_url")
-                                if not cand_url:
-                                    cand_url = asset.get("browser_download_url")
+                                cand_url = asset.get("browser_download_url") or asset.get("url")
                                 if cand_url and is_safe_https_url(cand_url):
                                     return True, tag_name, cand_url, latest_rel.get("body", "")
             except Exception:
@@ -297,7 +293,9 @@ class UpdateDialog(tk.Toplevel):
             return
 
         is_frozen = getattr(sys, "frozen", False)
-        if not is_frozen or not self.download_url or not self.download_url.lower().endswith(".exe"):
+        cand_lower = (self.download_url or "").lower()
+        is_exe = (cand_lower.endswith(".exe") or ".exe" in cand_lower or "/assets/" in cand_lower)
+        if not is_frozen or not is_exe:
             # If running in python source code or no direct exe url, open trusted web page
             target_url = self.download_url if (self.download_url and is_safe_https_url(self.download_url)) else f"https://github.com/{GITHUB_REPO}/releases/latest"
             webbrowser.open(target_url)
