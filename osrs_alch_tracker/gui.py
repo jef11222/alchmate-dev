@@ -1237,11 +1237,11 @@ class OSRSAlchDashboard(tk.Tk):
         # Min 24h Volume
         tk.Label(self.p2, text="Min Vol:", fg="#cccccc", bg="#202023").pack(side="left")
         self.ent_min_vol = tk.Entry(self.p2, width=6, bg="#1e1e1e", fg="#f1f1f1", insertbackground="#ffffff", relief="flat")
-        self.ent_min_vol.insert(0, str(self.state.config.get("min_volume", 5000)))
+        self.ent_min_vol.insert(0, str(self.state.config.get("min_volume", 100)))
         self.ent_min_vol.pack(side="left", padx=(2, 6))
         self.ent_min_vol.bind("<FocusOut>", self.on_filter_changed)
         self.ent_min_vol.bind("<Return>", self.on_filter_changed)
-        ToolTip(self.ent_min_vol, "Minimum 24-hour traded volume on Grand Exchange.")
+        ToolTip(self.ent_min_vol, "Minimum 24-hour traded volume on Grand Exchange. Set to 0 or leave blank to show all items.")
 
         # Min Profit per alch
         tk.Label(self.p2, text="Min Profit:", fg="#cccccc", bg="#202023").pack(side="left")
@@ -6855,6 +6855,8 @@ class OSRSAlchDashboard(tk.Tk):
             return self.var_type_staves.get()
         if any(w in name for w in ("dharok", "guthan", "karil", "torag", "ahrim", "verac", "obsidian", "granite")):
             return self.var_type_barrows.get()
+        if any(w in name for w in ("d'hide", "dragonhide", "leather")):
+            return self.var_type_bows.get() or self.var_type_other.get()
         return self.var_type_other.get()
 
     def recalculate_alch_table(self):
@@ -6862,7 +6864,13 @@ class OSRSAlchDashboard(tk.Tk):
         strat = self.var_strat.get().split()[0]
         cash_stack = self.get_current_cash_stack()
         max_spend = self.state.config.get("max_item_cost", 500000)
-        min_vol = self.state.config.get("min_volume", 5000)
+        if hasattr(self, "ent_min_vol") and self.ent_min_vol.get().strip():
+            try:
+                min_vol = parse_cash_input(self.ent_min_vol.get().strip())
+            except Exception:
+                min_vol = self.state.config.get("min_volume", 100)
+        else:
+            min_vol = self.state.config.get("min_volume", 100)
         mem_ok = self.var_members.get()
         f2p_ok = self.var_f2p.get()
         speed_filter = self.var_speed.get() if hasattr(self, "var_speed") else "All"
@@ -6910,7 +6918,7 @@ class OSRSAlchDashboard(tk.Tk):
                 continue
 
             vol = self.api.volumes_24h.get(item_id_str, 0)
-            if vol < min_vol:
+            if not search_query and vol < min_vol:
                 continue
 
             cost = buy_price + nat_cost
@@ -7045,7 +7053,7 @@ class OSRSAlchDashboard(tk.Tk):
         self.tree_alch.heading("volume", text=vol_header + (arrow if self.alch_sort_col == "volume" else ""))
 
         self.tree_alch.delete(*self.tree_alch.get_children())
-        for row in self.alch_rows[:300]:
+        for row in self.alch_rows:
             cart_str = f"{row['cart']}x" if row['cart'] > 0 else ""
             vol_base = f"{row['volume']/1000:.0f}k" if row['volume'] >= 100000 else f"{row['volume']:,}"
             if basis == "latest":

@@ -3465,5 +3465,525 @@ CRAFTING_RECIPES = [
                 "qty": 1
             }
         ]
-    }
+    },
+{
+    "name": "Green d'hide shield",
+    "output_id": 22275,
+    "skill": "Crafting",
+    "level": 62,
+    "xp": 128.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 1745,
+            "name": "Green dragon leather",
+            "qty": 2
+        },
+        {
+            "id": 4824,
+            "name": "Rune nails",
+            "qty": 15
+        },
+        {
+            "id": 22257,
+            "name": "Maple shield",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Blue d'hide shield",
+    "output_id": 22278,
+    "skill": "Crafting",
+    "level": 69,
+    "xp": 140.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2505,
+            "name": "Blue dragon leather",
+            "qty": 2
+        },
+        {
+            "id": 4824,
+            "name": "Rune nails",
+            "qty": 15
+        },
+        {
+            "id": 22257,
+            "name": "Maple shield",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Red d'hide shield",
+    "output_id": 22281,
+    "skill": "Crafting",
+    "level": 76,
+    "xp": 156.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2507,
+            "name": "Red dragon leather",
+            "qty": 2
+        },
+        {
+            "id": 4824,
+            "name": "Rune nails",
+            "qty": 15
+        },
+        {
+            "id": 22257,
+            "name": "Maple shield",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Black d'hide shield",
+    "output_id": 22284,
+    "skill": "Crafting",
+    "level": 83,
+    "xp": 172.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2509,
+            "name": "Black dragon leather",
+            "qty": 2
+        },
+        {
+            "id": 4824,
+            "name": "Rune nails",
+            "qty": 15
+        },
+        {
+            "id": 22257,
+            "name": "Maple shield",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Opal amulet (u)",
+    "output_id": 21099,
+    "skill": "Crafting",
+    "level": 27,
+    "xp": 55.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2355,
+            "name": "Silver bar",
+            "qty": 1
+        },
+        {
+            "id": 1609,
+            "name": "Opal",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Opal amulet",
+    "output_id": 21108,
+    "skill": "Crafting",
+    "level": 27,
+    "xp": 59.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 21099,
+            "name": "Opal amulet (u)",
+            "qty": 1
+        },
+        {
+            "id": 1759,
+            "name": "Ball of wool",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Jade amulet (u)",
+    "output_id": 21102,
+    "skill": "Crafting",
+    "level": 34,
+    "xp": 60.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2355,
+            "name": "Silver bar",
+            "qty": 1
+        },
+        {
+            "id": 1611,
+            "name": "Jade",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Jade amulet",
+    "output_id": 21111,
+    "skill": "Crafting",
+    "level": 34,
+    "xp": 64.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 21102,
+            "name": "Jade amulet (u)",
+            "qty": 1
+        },
+        {
+            "id": 1759,
+            "name": "Ball of wool",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Topaz amulet (u)",
+    "output_id": 21105,
+    "skill": "Crafting",
+    "level": 45,
+    "xp": 80.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2355,
+            "name": "Silver bar",
+            "qty": 1
+        },
+        {
+            "id": 1613,
+            "name": "Red topaz",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Topaz amulet",
+    "output_id": 21114,
+    "skill": "Crafting",
+    "level": 45,
+    "xp": 84.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 21105,
+            "name": "Topaz amulet (u)",
+            "qty": 1
+        },
+        {
+            "id": 1759,
+            "name": "Ball of wool",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Silver sickle",
+    "output_id": 2961,
+    "skill": "Crafting",
+    "level": 18,
+    "xp": 50.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 2355,
+            "name": "Silver bar",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Oak shortbow",
+    "output_id": 843,
+    "skill": "Fletching",
+    "level": 20,
+    "xp": 33.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 54,
+            "name": "Oak shortbow (u)",
+            "qty": 1
+        },
+        {
+            "id": 1777,
+            "name": "Bow string",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Willow shortbow",
+    "output_id": 849,
+    "skill": "Fletching",
+    "level": 35,
+    "xp": 66.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 60,
+            "name": "Willow shortbow (u)",
+            "qty": 1
+        },
+        {
+            "id": 1777,
+            "name": "Bow string",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Bronze crossbow",
+    "output_id": 9174,
+    "skill": "Fletching",
+    "level": 9,
+    "xp": 12.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 9420,
+            "name": "Bronze limbs",
+            "qty": 1
+        },
+        {
+            "id": 9440,
+            "name": "Wooden stock",
+            "qty": 1
+        },
+        {
+            "id": 9438,
+            "name": "Crossbow string",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Iron crossbow",
+    "output_id": 9177,
+    "skill": "Fletching",
+    "level": 39,
+    "xp": 44.0,
+    "members": True,
+    "materials": [
+        {
+            "id": 9423,
+            "name": "Iron limbs",
+            "qty": 1
+        },
+        {
+            "id": 9444,
+            "name": "Willow stock",
+            "qty": 1
+        },
+        {
+            "id": 9438,
+            "name": "Crossbow string",
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Iron platelegs",
+    "output_id": 1067,
+    "skill": "Smithing",
+    "level": 31,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron plateskirt",
+    "output_id": 1081,
+    "skill": "Smithing",
+    "level": 31,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron 2h sword",
+    "output_id": 1309,
+    "skill": "Smithing",
+    "level": 34,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron chainbody",
+    "output_id": 1101,
+    "skill": "Smithing",
+    "level": 26,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron battleaxe",
+    "output_id": 1363,
+    "skill": "Smithing",
+    "level": 25,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron kiteshield",
+    "output_id": 1191,
+    "skill": "Smithing",
+    "level": 32,
+    "xp": 75.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Iron scimitar",
+    "output_id": 1323,
+    "skill": "Smithing",
+    "level": 20,
+    "xp": 50.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2351,
+            "name": "Iron bar",
+            "qty": 2
+        }
+    ]
+},
+{
+    "name": "Bronze platelegs",
+    "output_id": 1075,
+    "skill": "Smithing",
+    "level": 16,
+    "xp": 37.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Bronze plateskirt",
+    "output_id": 1087,
+    "skill": "Smithing",
+    "level": 16,
+    "xp": 37.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Bronze 2h sword",
+    "output_id": 1307,
+    "skill": "Smithing",
+    "level": 19,
+    "xp": 37.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Bronze chainbody",
+    "output_id": 1103,
+    "skill": "Smithing",
+    "level": 11,
+    "xp": 37.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Bronze battleaxe",
+    "output_id": 1375,
+    "skill": "Smithing",
+    "level": 10,
+    "xp": 37.5,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 3
+        }
+    ]
+},
+{
+    "name": "Bronze scimitar",
+    "output_id": 1321,
+    "skill": "Smithing",
+    "level": 5,
+    "xp": 25.0,
+    "members": False,
+    "materials": [
+        {
+            "id": 2349,
+            "name": "Bronze bar",
+            "qty": 2
+        }
+    ]
+}
 ]

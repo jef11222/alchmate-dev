@@ -3394,5 +3394,1404 @@ GE_PROFIT_RECIPES = [
                 "qty": 1
             }
         ]
-    }
+    },
+{
+    "name": "Antipoison(3)",
+    "skill": "Herblore",
+    "level": 5,
+    "xp": 37.5,
+    "output_id": 175,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Marrentill potion (unf)",
+            "id": 93,
+            "qty": 1
+        },
+        {
+            "name": "Ground unicorn horn",
+            "id": 235,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Super energy(3)",
+    "skill": "Herblore",
+    "level": 52,
+    "xp": 117.5,
+    "output_id": 3018,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Avantoe potion (unf)",
+            "id": 103,
+            "qty": 1
+        },
+        {
+            "name": "Mort myre fungus",
+            "id": 2970,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Zamorak brew(3)",
+    "skill": "Herblore",
+    "level": 78,
+    "xp": 175.0,
+    "output_id": 189,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Torstol potion (unf)",
+            "id": 111,
+            "qty": 1
+        },
+        {
+            "name": "Jangerberries",
+            "id": 247,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Anti-venom(4)",
+    "skill": "Herblore",
+    "level": 87,
+    "xp": 120.0,
+    "output_id": 12905,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Antidote++(4)",
+            "id": 5952,
+            "qty": 1
+        },
+        {
+            "name": "Zulrah's scales",
+            "id": 12934,
+            "qty": 5
+        }
+    ]
+},
+{
+    "name": "Anti-venom+(4)",
+    "skill": "Herblore",
+    "level": 94,
+    "xp": 125.0,
+    "output_id": 12913,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Anti-venom(4)",
+            "id": 12905,
+            "qty": 1
+        },
+        {
+            "name": "Torstol",
+            "id": 269,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Super antifire potion(4)",
+    "skill": "Herblore",
+    "level": 92,
+    "xp": 130.0,
+    "output_id": 21978,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Antifire potion(4)",
+            "id": 2452,
+            "qty": 1
+        },
+        {
+            "name": "Crushed superior dragon bones",
+            "id": 21975,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Extended super antifire(4)",
+    "skill": "Herblore",
+    "level": 98,
+    "xp": 160.0,
+    "output_id": 22209,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2200,
+    "materials": [
+        {
+            "name": "Super antifire potion(4)",
+            "id": 21978,
+            "qty": 1
+        },
+        {
+            "name": "Lava scale shard",
+            "id": 11994,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Clean Guam leaf",
+    "skill": "Herblore",
+    "level": 3,
+    "xp": 2.5,
+    "output_id": 249,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy guam leaf",
+            "id": 199,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Guam potion (unf)",
+    "skill": "Herblore",
+    "level": 3,
+    "xp": 0.0,
+    "output_id": 91,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Guam leaf",
+            "id": 249,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Marrentill",
+    "skill": "Herblore",
+    "level": 5,
+    "xp": 3.8,
+    "output_id": 251,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy marrentill",
+            "id": 201,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Marrentill potion (unf)",
+    "skill": "Herblore",
+    "level": 5,
+    "xp": 0.0,
+    "output_id": 93,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Marrentill",
+            "id": 251,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Tarromin",
+    "skill": "Herblore",
+    "level": 11,
+    "xp": 5.0,
+    "output_id": 253,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy tarromin",
+            "id": 203,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Tarromin potion (unf)",
+    "skill": "Herblore",
+    "level": 11,
+    "xp": 0.0,
+    "output_id": 95,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Tarromin",
+            "id": 253,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Harralander",
+    "skill": "Herblore",
+    "level": 20,
+    "xp": 6.3,
+    "output_id": 255,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy harralander",
+            "id": 205,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Harralander potion (unf)",
+    "skill": "Herblore",
+    "level": 20,
+    "xp": 0.0,
+    "output_id": 97,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Harralander",
+            "id": 255,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Irit leaf",
+    "skill": "Herblore",
+    "level": 40,
+    "xp": 8.8,
+    "output_id": 259,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy irit leaf",
+            "id": 209,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Irit potion (unf)",
+    "skill": "Herblore",
+    "level": 40,
+    "xp": 0.0,
+    "output_id": 101,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Irit leaf",
+            "id": 259,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Avantoe",
+    "skill": "Herblore",
+    "level": 48,
+    "xp": 10.0,
+    "output_id": 261,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy avantoe",
+            "id": 211,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Kwuarm",
+    "skill": "Herblore",
+    "level": 54,
+    "xp": 11.3,
+    "output_id": 263,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy kwuarm",
+            "id": 213,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Cadantine",
+    "skill": "Herblore",
+    "level": 65,
+    "xp": 12.5,
+    "output_id": 265,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy cadantine",
+            "id": 215,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Lantadyme",
+    "skill": "Herblore",
+    "level": 67,
+    "xp": 13.1,
+    "output_id": 2481,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy lantadyme",
+            "id": 2485,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Lantadyme potion (unf)",
+    "skill": "Herblore",
+    "level": 67,
+    "xp": 0.0,
+    "output_id": 2483,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Lantadyme",
+            "id": 2481,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Dwarf weed",
+    "skill": "Herblore",
+    "level": 70,
+    "xp": 13.8,
+    "output_id": 267,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy dwarf weed",
+            "id": 217,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Dwarf weed potion (unf)",
+    "skill": "Herblore",
+    "level": 70,
+    "xp": 0.0,
+    "output_id": 109,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Dwarf weed",
+            "id": 267,
+            "qty": 1
+        },
+        {
+            "name": "Vial of water",
+            "id": 227,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Clean Torstol",
+    "skill": "Herblore",
+    "level": 75,
+    "xp": 15.0,
+    "output_id": 269,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 3500,
+    "materials": [
+        {
+            "name": "Grimy torstol",
+            "id": 219,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cut Opal",
+    "skill": "Crafting",
+    "level": 1,
+    "xp": 15.0,
+    "output_id": 1609,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2400,
+    "materials": [
+        {
+            "name": "Uncut opal",
+            "id": 1625,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cut Jade",
+    "skill": "Crafting",
+    "level": 13,
+    "xp": 20.0,
+    "output_id": 1611,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2400,
+    "materials": [
+        {
+            "name": "Uncut jade",
+            "id": 1627,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cut Red topaz",
+    "skill": "Crafting",
+    "level": 16,
+    "xp": 25.0,
+    "output_id": 1613,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2400,
+    "materials": [
+        {
+            "name": "Uncut red topaz",
+            "id": 1629,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Empty candle lantern",
+    "skill": "Crafting",
+    "level": 4,
+    "xp": 19.0,
+    "output_id": 4527,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Molten glass",
+            "id": 1775,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Empty oil lamp",
+    "skill": "Crafting",
+    "level": 12,
+    "xp": 25.0,
+    "output_id": 4525,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Molten glass",
+            "id": 1775,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Empty fishbowl",
+    "skill": "Crafting",
+    "level": 42,
+    "xp": 42.5,
+    "output_id": 6667,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Molten glass",
+            "id": 1775,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Opal bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 4,
+    "xp": 9.0,
+    "output_id": 9236,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Opal bolts",
+            "id": 879,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Air rune",
+            "id": 556,
+            "qty": 2
+        }
+    ]
+},
+{
+    "name": "Pearl bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 24,
+    "xp": 29.0,
+    "output_id": 9238,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Pearl bolts",
+            "id": 880,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Water rune",
+            "id": 555,
+            "qty": 2
+        }
+    ]
+},
+{
+    "name": "Topaz bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 29,
+    "xp": 33.0,
+    "output_id": 9239,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Topaz bolts",
+            "id": 9336,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 2
+        }
+    ]
+},
+{
+    "name": "Sapphire bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 7,
+    "xp": 17.5,
+    "output_id": 9240,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Sapphire bolts",
+            "id": 9337,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Water rune",
+            "id": 555,
+            "qty": 1
+        },
+        {
+            "name": "Mind rune",
+            "id": 558,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Emerald bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 27,
+    "xp": 37.0,
+    "output_id": 9241,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Emerald bolts",
+            "id": 9338,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Air rune",
+            "id": 556,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Ruby bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 49,
+    "xp": 59.0,
+    "output_id": 9242,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Ruby bolts",
+            "id": 9339,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 5
+        },
+        {
+            "name": "Blood rune",
+            "id": 565,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Diamond bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 57,
+    "xp": 67.0,
+    "output_id": 9243,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Diamond bolts",
+            "id": 9340,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Earth rune",
+            "id": 557,
+            "qty": 2
+        },
+        {
+            "name": "Law rune",
+            "id": 563,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Dragonstone bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 68,
+    "xp": 78.0,
+    "output_id": 9244,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Dragonstone bolts",
+            "id": 9341,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Earth rune",
+            "id": 557,
+            "qty": 15
+        },
+        {
+            "name": "Soul rune",
+            "id": 566,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Onyx bolts (e) (x10)",
+    "skill": "Magic",
+    "level": 87,
+    "xp": 97.0,
+    "output_id": 9245,
+    "output_qty": 10,
+    "members": True,
+    "hourly_actions": 2500,
+    "materials": [
+        {
+            "name": "Onyx bolts",
+            "id": 9342,
+            "qty": 10
+        },
+        {
+            "name": "Cosmic rune",
+            "id": 564,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 20
+        },
+        {
+            "name": "Death rune",
+            "id": 560,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Spin Flax (x5)",
+    "skill": "Magic",
+    "level": 76,
+    "xp": 75.0,
+    "output_id": 1777,
+    "output_qty": 5,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Flax",
+            "id": 1779,
+            "qty": 5
+        },
+        {
+            "name": "Astral rune",
+            "id": 9075,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 5
+        },
+        {
+            "name": "Air rune",
+            "id": 556,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Tan Black Leather (x5)",
+    "skill": "Magic",
+    "level": 78,
+    "xp": 81.0,
+    "output_id": 2509,
+    "output_qty": 5,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Black dragonhide",
+            "id": 1747,
+            "qty": 5
+        },
+        {
+            "name": "Astral rune",
+            "id": 9075,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 5
+        }
+    ]
+},
+{
+    "name": "Tan Blue Leather (x5)",
+    "skill": "Magic",
+    "level": 78,
+    "xp": 81.0,
+    "output_id": 2505,
+    "output_qty": 5,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Blue dragonhide",
+            "id": 1751,
+            "qty": 5
+        },
+        {
+            "name": "Astral rune",
+            "id": 9075,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 5
+        }
+    ]
+},
+{
+    "name": "Tan Red Leather (x5)",
+    "skill": "Magic",
+    "level": 78,
+    "xp": 81.0,
+    "output_id": 2507,
+    "output_qty": 5,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Red dragonhide",
+            "id": 1749,
+            "qty": 5
+        },
+        {
+            "name": "Astral rune",
+            "id": 9075,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 5
+        }
+    ]
+},
+{
+    "name": "Tan Green Leather (x5)",
+    "skill": "Magic",
+    "level": 78,
+    "xp": 81.0,
+    "output_id": 1745,
+    "output_qty": 5,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Green dragonhide",
+            "id": 1753,
+            "qty": 5
+        },
+        {
+            "name": "Astral rune",
+            "id": 9075,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 5
+        }
+    ]
+},
+{
+    "name": "Superheat Runite Bar",
+    "skill": "Magic",
+    "level": 43,
+    "xp": 53.0,
+    "output_id": 2363,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Runite ore",
+            "id": 451,
+            "qty": 1
+        },
+        {
+            "name": "Coal",
+            "id": 453,
+            "qty": 8
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Superheat Adamant Bar",
+    "skill": "Magic",
+    "level": 43,
+    "xp": 37.5,
+    "output_id": 2361,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Adamantite ore",
+            "id": 449,
+            "qty": 1
+        },
+        {
+            "name": "Coal",
+            "id": 453,
+            "qty": 6
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Superheat Mithril Bar",
+    "skill": "Magic",
+    "level": 43,
+    "xp": 30.0,
+    "output_id": 2359,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Mithril ore",
+            "id": 447,
+            "qty": 1
+        },
+        {
+            "name": "Coal",
+            "id": 453,
+            "qty": 4
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Superheat Steel Bar",
+    "skill": "Magic",
+    "level": 43,
+    "xp": 17.5,
+    "output_id": 2353,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Iron ore",
+            "id": 440,
+            "qty": 1
+        },
+        {
+            "name": "Coal",
+            "id": 453,
+            "qty": 2
+        },
+        {
+            "name": "Nature rune",
+            "id": 561,
+            "qty": 1
+        },
+        {
+            "name": "Fire rune",
+            "id": 554,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Cooked trout",
+    "skill": "Cooking",
+    "level": 15,
+    "xp": 70.0,
+    "output_id": 333,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1400,
+    "materials": [
+        {
+            "name": "Raw trout",
+            "id": 335,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cooked salmon",
+    "skill": "Cooking",
+    "level": 25,
+    "xp": 90.0,
+    "output_id": 329,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1400,
+    "materials": [
+        {
+            "name": "Raw salmon",
+            "id": 331,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cooked tuna",
+    "skill": "Cooking",
+    "level": 30,
+    "xp": 100.0,
+    "output_id": 361,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1400,
+    "materials": [
+        {
+            "name": "Raw tuna",
+            "id": 359,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Cooked bass",
+    "skill": "Cooking",
+    "level": 43,
+    "xp": 130.0,
+    "output_id": 365,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1400,
+    "materials": [
+        {
+            "name": "Raw bass",
+            "id": 363,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Plain pizza",
+    "skill": "Cooking",
+    "level": 35,
+    "xp": 143.0,
+    "output_id": 2289,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1600,
+    "materials": [
+        {
+            "name": "Pizza base",
+            "id": 2283,
+            "qty": 1
+        },
+        {
+            "name": "Tomato",
+            "id": 1982,
+            "qty": 1
+        },
+        {
+            "name": "Cheese",
+            "id": 1985,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Meat pizza",
+    "skill": "Cooking",
+    "level": 45,
+    "xp": 26.0,
+    "output_id": 2293,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 2000,
+    "materials": [
+        {
+            "name": "Plain pizza",
+            "id": 2289,
+            "qty": 1
+        },
+        {
+            "name": "Cooked meat",
+            "id": 2142,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Pineapple pizza",
+    "skill": "Cooking",
+    "level": 65,
+    "xp": 45.0,
+    "output_id": 2301,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 2000,
+    "materials": [
+        {
+            "name": "Plain pizza",
+            "id": 2289,
+            "qty": 1
+        },
+        {
+            "name": "Pineapple ring",
+            "id": 2118,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Ball of wool",
+    "skill": "Crafting",
+    "level": 1,
+    "xp": 2.5,
+    "output_id": 1759,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Wool",
+            "id": 1737,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Magic string",
+    "skill": "Crafting",
+    "level": 19,
+    "xp": 30.0,
+    "output_id": 6038,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Magic roots",
+            "id": 6051,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Rope",
+    "skill": "Crafting",
+    "level": 30,
+    "xp": 25.0,
+    "output_id": 954,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1800,
+    "materials": [
+        {
+            "name": "Ball of wool",
+            "id": 1759,
+            "qty": 4
+        }
+    ]
+},
+{
+    "name": "Pot",
+    "skill": "Crafting",
+    "level": 1,
+    "xp": 12.5,
+    "output_id": 1931,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Soft clay",
+            "id": 1761,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Bowl",
+    "skill": "Crafting",
+    "level": 8,
+    "xp": 15.0,
+    "output_id": 1923,
+    "output_qty": 1,
+    "members": False,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Soft clay",
+            "id": 1761,
+            "qty": 1
+        }
+    ]
+},
+{
+    "name": "Plant pot",
+    "skill": "Crafting",
+    "level": 19,
+    "xp": 37.5,
+    "output_id": 5350,
+    "output_qty": 1,
+    "members": True,
+    "hourly_actions": 1200,
+    "materials": [
+        {
+            "name": "Soft clay",
+            "id": 1761,
+            "qty": 1
+        }
+    ]
+}
 ]

@@ -22,7 +22,7 @@ DEFAULT_CONFIG = {
     "members": True,
     "f2p": False,
     "cash_stack": 5000000,
-    "min_volume": 5000,
+    "min_volume": 100,
     "max_item_cost": 500000,
     "strategy": "patient",  # 'patient' (bid) or 'instant' (ask)
     "auto_refresh_mins": 2,
