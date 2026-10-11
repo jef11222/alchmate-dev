@@ -173,7 +173,8 @@ Choose the version that best fits your needs:
 | Edition | File | Best For | Direct Download Link |
 | :--- | :--- | :--- | :--- |
 | **🚀 Windows Installer (Recommended)** | `AlchMate_Setup.exe` | Standard installation with Start Menu & Desktop shortcuts, clean uninstall, and repair mode. | [⬇️ Download Installer](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate_Setup.exe) |
-| **⚡ Portable Edition** | `AlchMate.exe` | Zero installation required. Run directly from your Downloads folder, USB drive, or desktop. | [⬇️ Download Portable (.exe)](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate.exe) |
+| **⚡ Portable Edition (.exe)** | `AlchMate_Portable.exe` / `AlchMate.exe` | Zero installation required. Run directly from your Downloads folder, USB drive, or desktop. | [⬇️ Download Portable (.exe)](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate_Portable.exe) |
+| **📦 Portable Edition (.zip)** | `AlchMate-v1.0.0-Portable.zip` | Standalone ZIP containing portable executable, plugin JAR, and readme. | [⬇️ Download Portable (.zip)](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate-v1.0.0-Portable.zip) |
 
 > 🔗 **All Versions & Release Notes:** [View Latest GitHub Release](https://github.com/jef11222/osrs-alch-tracker/releases/latest)
 
