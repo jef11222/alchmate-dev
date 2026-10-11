@@ -1,0 +1,65 @@
+name: "🐛 Bug Report"
+description: "Report an issue, glitch, or calculation error in AlchMate or the plugin."
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please provide as much detail as possible so we can quickly investigate and fix it.
+  - type: dropdown
+    id: component
+    attributes:
+      label: "Affected Component"
+      description: "Which part of AlchMate is experiencing the issue?"
+      options:
+        - "Desktop App (AlchMate.exe)"
+        - "RuneLite In-Game Plugin"
+        - "High Alch Margins & Pricing"
+        - "Craft-then-Alch / GE Production Recipes"
+        - "Bond Roadmap & Wealth HUD"
+        - "In-App Updater"
+        - "Other"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Bug Description"
+      description: "A clear and concise description of what went wrong."
+      placeholder: "Briefly explain the issue..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: "Steps to Reproduce"
+      description: "Step-by-step instructions to reproduce the bug."
+      placeholder: |
+        1. Open '...'
+        2. Filter by '...'
+        3. Observe error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior"
+      description: "What did you expect to happen instead?"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Error Messages or Client Logs"
+      description: "Paste any in-game error popups, stack traces, or relevant RuneLite client.log lines here."
+      render: shell
+  - type: textarea
+    id: environment
+    attributes:
+      label: "System & Versions"
+      description: "Your setup details."
+      placeholder: |
+        - Operating System: Windows 11 / Windows 10
+        - AlchMate Version: v1.0.0
+        - RuneLite Version: 1.10.x (if applicable)

@@ -1,0 +1,41 @@
+name: "💡 Feature Request / Recipe Suggestion"
+description: "Suggest a new moneymaking recipe, skilling method, or feature for AlchMate."
+title: "[FEATURE]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea or a moneymaking method you'd like to see in AlchMate? Let us know!
+  - type: dropdown
+    id: category
+    attributes:
+      label: "Category"
+      options:
+        - "New Moneymaking Recipe / Production Method"
+        - "High Alch Calculator Improvement"
+        - "UI / User Experience Enhancement"
+        - "RuneLite Overlay / HUD Feature"
+        - "Market Analysis / Filter Engine"
+        - "Other"
+    validations:
+      required: true
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: "Feature / Recipe Description"
+      description: "Describe your proposed feature or recipe in detail."
+      placeholder: "e.g. Add Mahogany birdhouse crafting to GE Production..."
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: "Why would this be helpful?"
+      description: "Explain why players, crafters, or high-alchers would benefit from this."
+      placeholder: "e.g. This is a popular training method with high profit margins..."
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional Context or References"
+      description: "Add any links, OSRS Wiki references, or screenshots here."
