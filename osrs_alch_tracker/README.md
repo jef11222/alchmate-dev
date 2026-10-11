@@ -106,7 +106,7 @@ A real-time, desktop companion and in-game RuneLite overlay tool for **Old Schoo
   - **🪄 Alch vs. 🏪 GE Disposal:** Intelligent recommendations on whether to High Alch your crafted products or sell them on the Grand Exchange.
   - **🛒 1-Click Skilling Shopping Cart & Bank Tags:** Instantly add materials to your cart, copy formatted skilling shopping lists, or export RuneLite Bank Tag tabs (`banktags,1,...`).
 - **🔒 Dedicated Multi-Instance / Monitored Character Lock:**
-  - **Focus Lock:** Dropdown selector in the top bar to lock 100% of dashboard monitoring (Cash, Nats, Levels, GE Cart, Session, Timers) to a specific character (e.g. `jef112`).
+  - **Focus Lock:** Dropdown selector in the top bar to lock 100% of dashboard monitoring (Cash, Nats, Levels, GE Cart, Session, Timers) to a specific character (e.g. `'Main'`, `'AlchAlt'`).
   - **Silent Background Processing:** Secondary clients / alts update silently in the background without stealing focus or overwriting active data.
 - **⭐ Smart Picks & Top Recommendations:**
   - **🏆 All-Time Workhorses:** Instant access to Hall-of-Fame staples that veteran players rely on (Rune platelegs, plateskirts, 2h swords, kiteshields, battleaxes, Adamant platebody, Battlestaves, D'hide) with custom strategic verdicts.
