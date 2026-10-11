@@ -42,19 +42,40 @@ def parse_version_tuple(v_str):
         parts.append(0)
     return tuple(parts[:3])
 
-def check_for_updates(current_version=APP_VERSION, channel="stable"):
+def get_github_auth_token(custom_token=None):
+    if custom_token:
+        return custom_token
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token:
+        return token
+    try:
+        res = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, timeout=2)
+        if res.returncode == 0 and res.stdout.strip():
+            return res.stdout.strip()
+    except Exception:
+        pass
+    return None
+
+def check_for_updates(current_version=APP_VERSION, channel="stable", custom_repo=None, github_token=None):
     """
     Queries GitHub Releases API for the latest release.
-    Returns: (has_update: bool, remote_version: str, download_url: str, release_notes: str)
+    Supports 'stable' (public repo) and 'dev'/'test' (development repo) channels.
     """
-    if channel == "test":
-        # Test channel does not prompt to downgrade to public main releases
-        return False, "", "", ""
+    if custom_repo:
+        repo = custom_repo
+    elif channel in ("dev", "test"):
+        repo = "jef11222/alchmate-dev"
+    else:
+        repo = "jef11222/osrs-alch-tracker"
 
-    req = urllib.request.Request(
-        RELEASES_API_URL,
-        headers={"User-Agent": "AlchMate-App"}
-    )
+    api_url = f"https://api.github.com/repos/{repo}/releases/latest"
+    token = get_github_auth_token(github_token)
+
+    headers = {"User-Agent": "AlchMate-App"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+
+    req = urllib.request.Request(api_url, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=6) as resp:
             if resp.status == 200:
@@ -63,7 +84,7 @@ def check_for_updates(current_version=APP_VERSION, channel="stable"):
                 remote_tuple = parse_version_tuple(tag_name)
                 curr_tuple = parse_version_tuple(current_version)
 
-                if remote_tuple > curr_tuple:
+                if remote_tuple > curr_tuple or (channel in ("dev", "test") and tag_name != current_version):
                     # Look for Windows executable asset (.exe) matching the running edition
                     curr_name = os.path.basename(sys.executable).lower() if getattr(sys, "frozen", False) else "alchmate.exe"
                     download_url = None
@@ -73,7 +94,9 @@ def check_for_updates(current_version=APP_VERSION, channel="stable"):
 
                     for asset in data.get("assets", []):
                         name = asset.get("name", "").lower()
-                        cand_url = asset.get("browser_download_url")
+                        cand_url = asset.get("url") if token else asset.get("browser_download_url")
+                        if not cand_url:
+                            cand_url = asset.get("browser_download_url")
                         if not is_safe_https_url(cand_url):
                             continue
                         if name == curr_name:
@@ -86,28 +109,55 @@ def check_for_updates(current_version=APP_VERSION, channel="stable"):
                         elif name.endswith(".exe") and not fallback_exe_url:
                             fallback_exe_url = cand_url
 
-                    download_url = exact_match_url or fallback_exe_url
+                    download_url = exact_match_url or fallback_exe_url or setup_url
                     if not download_url:
                         html_url = data.get("html_url")
                         download_url = setup_url or (html_url if is_safe_https_url(html_url) else None)
 
                     if download_url:
                         return True, tag_name, download_url, data.get("body", "")
+    except urllib.error.HTTPError as e:
+        if e.code == 404 and channel in ("dev", "test"):
+            # Try fetching all releases (in case release is marked prerelease)
+            try:
+                all_url = f"https://api.github.com/repos/{repo}/releases"
+                req2 = urllib.request.Request(all_url, headers=headers)
+                with urllib.request.urlopen(req2, timeout=6) as resp2:
+                    if resp2.status == 200:
+                        all_data = json.loads(resp2.read().decode("utf-8"))
+                        if all_data:
+                            latest_rel = all_data[0]
+                            tag_name = latest_rel.get("tag_name", "")
+                            for asset in latest_rel.get("assets", []):
+                                cand_url = asset.get("url") if token else asset.get("browser_download_url")
+                                if not cand_url:
+                                    cand_url = asset.get("browser_download_url")
+                                if cand_url and is_safe_https_url(cand_url):
+                                    return True, tag_name, cand_url, latest_rel.get("body", "")
+            except Exception:
+                pass
     except Exception as e:
         print(f"Update check failed: {e}")
 
     return False, current_version, None, ""
 
-def download_file_with_progress(url, dest_path, progress_callback=None):
+def download_file_with_progress(url, dest_path, progress_callback=None, github_token=None):
     """
     Downloads file from URL in chunks, calling progress_callback(percent_int, downloaded_bytes, total_bytes).
     """
     if not is_safe_https_url(url):
         raise ValueError(f"Untrusted download URL: {url}")
 
+    token = get_github_auth_token(github_token)
+    headers = {"User-Agent": "AlchMate-App"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+        if "/api.github.com/" in url and "/assets/" in url:
+            headers["Accept"] = "application/octet-stream"
+
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "AlchMate-App"}
+        headers=headers
     )
     with urllib.request.urlopen(req, timeout=45) as resp, open(dest_path, "wb") as f:
         total_size = int(resp.headers.get("Content-Length", 0))
@@ -189,12 +239,13 @@ del "%~f0"
     return True, "Restarting application..."
 
 class UpdateDialog(tk.Toplevel):
-    def __init__(self, parent, remote_version, download_url, release_notes):
+    def __init__(self, parent, remote_version, download_url, release_notes, github_token=None):
         super().__init__(parent)
         self.parent = parent
         self.remote_version = remote_version
         self.download_url = download_url
         self.release_notes = release_notes
+        self.github_token = github_token
         self.is_downloading = False
 
         self.title(f"Update Available - {remote_version}")
@@ -274,7 +325,7 @@ class UpdateDialog(tk.Toplevel):
             self.after(0, lambda: self._update_progress_ui(pct, f"Downloading: {mb_dl:.1f} MB / {mb_tot:.1f} MB ({pct}%)"))
 
         try:
-            download_file_with_progress(self.download_url, temp_exe, progress)
+            download_file_with_progress(self.download_url, temp_exe, progress, github_token=self.github_token)
             self.after(0, lambda: self._finish_and_restart(temp_exe))
         except Exception as e:
             self.after(0, lambda: self._on_download_error(str(e)))

@@ -6631,7 +6631,10 @@ class OSRSAlchDashboard(tk.Tk):
 
     def _check_update_startup(self):
         try:
-            has_up, remote_v, dl_url, notes = check_for_updates(APP_VERSION)
+            channel = self.state.config.get("update_channel", "stable")
+            custom_repo = self.state.config.get("update_repo", None)
+            gh_token = self.state.config.get("github_token", None)
+            has_up, remote_v, dl_url, notes = check_for_updates(APP_VERSION, channel=channel, custom_repo=custom_repo, github_token=gh_token)
             if has_up:
                 self.latest_update_info = (remote_v, dl_url, notes)
                 try:
@@ -6659,14 +6662,17 @@ class OSRSAlchDashboard(tk.Tk):
             self.lbl_status_right.config(text=f"Update {remote_v} available!", fg="#2ecc71")
 
     def on_update_button_click(self):
+        gh_token = self.state.config.get("github_token", None)
         if self.latest_update_info:
             remote_v, dl_url, notes = self.latest_update_info
-            UpdateDialog(self, remote_v, dl_url, notes)
+            UpdateDialog(self, remote_v, dl_url, notes, github_token=gh_token)
         else:
             self.btn_update.config(text="Checking...", state="disabled")
             def worker():
                 try:
-                    has_up, remote_v, dl_url, notes = check_for_updates(APP_VERSION)
+                    channel = self.state.config.get("update_channel", "stable")
+                    custom_repo = self.state.config.get("update_repo", None)
+                    has_up, remote_v, dl_url, notes = check_for_updates(APP_VERSION, channel=channel, custom_repo=custom_repo, github_token=gh_token)
                     self.after(0, lambda: self._on_manual_check_done(has_up, remote_v, dl_url, notes))
                 except Exception as e:
                     self.after(0, lambda: self._on_manual_check_done(False, APP_VERSION, None, str(e)))
@@ -6677,7 +6683,8 @@ class OSRSAlchDashboard(tk.Tk):
         if has_up:
             self.latest_update_info = (remote_v, dl_url, notes)
             self._render_update_available()
-            UpdateDialog(self, remote_v, dl_url, notes)
+            gh_token = self.state.config.get("github_token", None)
+            UpdateDialog(self, remote_v, dl_url, notes, github_token=gh_token)
         else:
             self.btn_update.config(text=f"v{APP_VERSION}", bg="#2d2d30", fg="#888888")
             messagebox.showinfo("Up to Date", f"You are running the latest version (v{APP_VERSION})!")
