@@ -7,10 +7,10 @@ import glob
 import datetime
 
 def get_app_data_dir():
-    if getattr(sys, "frozen", False):
-        base = os.getenv("LOCALAPPDATA") or os.path.expanduser("~")
-        return os.path.join(base, "OSRS_Alch_Tracker", "data")
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+    base = os.getenv("LOCALAPPDATA") or os.path.expanduser("~")
+    # For developer source mode, use AlchMate_Dev to keep developer test data separate from public AlchMate
+    app_folder = "AlchMate" if getattr(sys, "frozen", False) else "AlchMate_Dev"
+    return os.path.join(base, app_folder, "data")
 
 STATE_DIR = get_app_data_dir()
 CONFIG_FILE = os.path.join(STATE_DIR, "config.json")
@@ -47,23 +47,16 @@ DEFAULT_CONFIG = {
     "speed_filter": "All",
     "hide_maxed_cooldown": True,
     "price_basis": "5m", # '5m' (Volume-Weighted Avg) or 'latest' (1-Trade Tick)
-    "min_alert_5m_vol": 3 # Minimum 5m sell volume required to trigger a price change alert
+    "min_alert_5m_vol": 3, # Minimum 5m sell volume required to trigger a price change alert
+    "monitored_character": "All Accounts",
+    "last_seen_version": "1.0.0",
+    "update_channel": "test" if not getattr(sys, "frozen", False) else "stable",
+    "bridge_port": 18833
 }
 
 class AppState:
     def __init__(self):
         os.makedirs(STATE_DIR, exist_ok=True)
-        # Migrate existing state if transitioning to user AppData
-        old_local_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-        if STATE_DIR != old_local_dir and os.path.exists(old_local_dir):
-            for fname in ("config.json", "timers.json", "session.json", "accounts.json"):
-                old_f = os.path.join(old_local_dir, fname)
-                new_f = os.path.join(STATE_DIR, fname)
-                if os.path.exists(old_f) and not os.path.exists(new_f):
-                    try:
-                        shutil.copy2(old_f, new_f)
-                    except Exception:
-                        pass
         self.config = dict(DEFAULT_CONFIG)
         self.timers = {} # item_id -> {"name": ..., "bought_time": ..., "qty": ..., "account": ...}
         self.session = {
@@ -112,29 +105,37 @@ class AppState:
 
     def save_config(self):
         try:
-            with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            tmp = CONFIG_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self.config, f, indent=2)
+            os.replace(tmp, CONFIG_FILE)
         except Exception as e:
             print(f"Error saving config: {e}")
 
     def save_timers(self):
         try:
-            with open(TIMERS_FILE, "w", encoding="utf-8") as f:
+            tmp = TIMERS_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self.timers, f, indent=2)
+            os.replace(tmp, TIMERS_FILE)
         except Exception as e:
             print(f"Error saving timers: {e}")
 
     def save_session(self):
         try:
-            with open(SESSION_FILE, "w", encoding="utf-8") as f:
+            tmp = SESSION_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self.session, f, indent=2)
+            os.replace(tmp, SESSION_FILE)
         except Exception as e:
             print(f"Error saving session: {e}")
 
     def save_accounts(self):
         try:
-            with open(ACCOUNTS_FILE, "w", encoding="utf-8") as f:
+            tmp = ACCOUNTS_FILE + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
                 json.dump(self.accounts, f, indent=2)
+            os.replace(tmp, ACCOUNTS_FILE)
         except Exception as e:
             print(f"Error saving accounts: {e}")
 
@@ -192,7 +193,8 @@ class AppState:
     def add_timer(self, item_id, item_name, qty, account="Default"):
         now = time.time()
         iid_str = str(item_id)
-        acc_tag = account if account and account != "Unknown" else "Default"
+        clean_acc = str(account).replace('\u00a0', ' ').strip() if account else "Default"
+        acc_tag = clean_acc if clean_acc and clean_acc != "Unknown" else "Default"
         key = f"{acc_tag}_{iid_str}" if acc_tag != "Default" else iid_str
 
         existing = self.timers.get(key)
@@ -230,13 +232,16 @@ class AppState:
         target_account = account or getattr(self, "active_account", "All")
 
         if target_account and target_account != "All":
-            tinfo = self.timers.get(f"{target_account}_{iid_str}") or self.timers.get(iid_str)
+            clean_tgt = str(target_account).replace('\u00a0', ' ').strip()
+            tinfo = self.timers.get(f"{clean_tgt}_{iid_str}") or self.timers.get(iid_str)
         else:
+            candidates = []
             for k, t in self.timers.items():
                 if str(t.get("item_id", "")) == iid_str or k.endswith(f"_{iid_str}") or k == iid_str:
                     if (now - t.get("bought_time", 0)) < 14400:
-                        tinfo = t
-                        break
+                        candidates.append(t)
+            if candidates:
+                tinfo = max(candidates, key=lambda x: x.get("qty", 0))
 
         if not tinfo:
             return base_limit, 0, False
@@ -295,7 +300,7 @@ class AppState:
 
     def sync_from_runelite_ge(self, api_mapping=None, default_nat_price=140, raw_sync_data=None):
         """Authoritatively synchronizes active 4-hour buy limits and past trades directly
-        from RuneLite / Microbot profile configurations or live GE_SYNC bridge events.
+        from RuneLite profile configurations or live GE_SYNC bridge events.
         Guarantees exact reset timestamps, true bought quantities, and backfills any trades
         missed in the session tracker without double-counting.
         """
@@ -315,8 +320,8 @@ class AppState:
             if "tradeHistory" in raw_sync_data and isinstance(raw_sync_data["tradeHistory"], list):
                 account_trades[acc] = raw_sync_data["tradeHistory"]
         else:
-            raw_paths = glob.glob(os.path.expanduser(r"~\.runelite\microbot-profiles\*rsprofile*.properties")) + \
-                        glob.glob(os.path.expanduser(r"~\.runelite\profiles2\*rsprofile*.properties"))
+            raw_paths = glob.glob(os.path.expanduser(r"~\.runelite\*profiles*\*rsprofile*.properties")) + \
+                        glob.glob(os.path.expanduser(r"~\.runelite\profiles*\*rsprofile*.properties"))
             profile_paths = sorted([p for p in raw_paths if os.path.exists(p)], key=os.path.getmtime, reverse=True)
 
             acc_hash_buylimits = {}
@@ -437,20 +442,29 @@ class AppState:
                         if base_limit > 0 and tot_qty > base_limit:
                             tot_qty = base_limit
 
+                        existing_ts = self.timers.get(key, {}).get("bought_time", 0)
+                        final_bought_time = start_ts
+                        if existing_ts > 0 and abs(existing_ts - start_ts) < 14400:
+                            final_bought_time = min(start_ts, existing_ts)
+
                         self.timers[key] = {
                             "account": acc_name,
                             "item_id": int(iid) if str(iid).isdigit() else 0,
                             "name": name,
-                            "bought_time": start_ts,
+                            "bought_time": final_bought_time,
                             "qty": tot_qty
                         }
                         timers_updated += 1
                     else:
-                        # Expired in RuneLite, remove from timers
-                        if key in self.timers:
-                            del self.timers[key]
-                        if str(iid) in self.timers:
-                            del self.timers[str(iid)]
+                        # Expired in RuneLite on disk: only remove if the timer in memory is ALSO expired (>= 4 hours)
+                        # Prevents stale on-disk properties files from wiping freshly created live in-memory timers!
+                        for k_del in (key, str(iid)):
+                            if k_del in self.timers:
+                                existing_ts = self.timers[k_del].get("bought_time", 0)
+                                if (now_local - existing_ts) >= 14400:
+                                    del self.timers[k_del]
+                                    if k_del in self.notified_timers:
+                                        self.notified_timers.discard(k_del)
                 except Exception:
                     pass
 

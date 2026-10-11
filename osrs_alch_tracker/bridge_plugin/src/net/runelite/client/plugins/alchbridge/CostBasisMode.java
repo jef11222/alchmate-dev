@@ -1,8 +1,9 @@
-package net.runelite.client.plugins.microbot.alchbridge;
+package net.runelite.client.plugins.alchbridge;
 
 public enum CostBasisMode {
-    W308_TRADE("W308 Trade"),
-    GRAND_EXCHANGE("Live GE");
+    AUTO_DETECT("Auto-Detect (GE / P2P)"),
+    W308_TRADE("Force P2P / W308"),
+    GRAND_EXCHANGE("Force Live GE");
 
     private final String displayName;
 

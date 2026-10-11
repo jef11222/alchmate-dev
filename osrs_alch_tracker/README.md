@@ -1,10 +1,10 @@
-# 🧙‍♂️ OSRS High Alchemy & Crafting Profit Tracker
+# 🧙‍♂️ AlchMate - OSRS High Alchemy & Crafting Profit Tracker
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-0078D6.svg)](https://www.microsoft.com/windows)
 
-A real-time, desktop companion tool for **Old School RuneScape (OSRS)** that monitors live Grand Exchange prices via the official OSRS Wiki Real-time Prices API. It tracks high-margin High Alchemy flips, evaluates Craft-then-Alch skilling recipes, manages 4-hour Grand Exchange buy limit timers, tracks Nature Rune bank stockpiles, and logs session profit and Magic XP.
+A real-time, desktop companion and in-game RuneLite overlay tool for **Old School RuneScape (OSRS)** that monitors live Grand Exchange prices via the official OSRS Wiki Real-time Prices API. It tracks high-margin High Alchemy flips, auto-detects item acquisition origin (GE vs P2P/W308), tracks Bond progression and invested GE capital, evaluates Craft-then-Alch skilling recipes, manages 4-hour Grand Exchange buy limit timers, tracks Nature Rune bank stockpiles, and logs session profit and Magic XP.
 
 ## ✨ Key Features
 
@@ -93,7 +93,7 @@ A real-time, desktop companion tool for **Old School RuneScape (OSRS)** that mon
   - **Live Breakeven Ceilings:** Automatically calculates the exact maximum Grand Exchange buy price for bars, dragonhides, and logs to train at **zero gold loss** based on live High Alch / GE sell values and real-time Nature Rune prices.
   - **Configurable Safety Margin:** Real-time `Target Margin` input lets you set a desired profit per item (e.g. 50, 100, 200 gp), automatically recalculating required GE buy bids.
   - **1-Click GE Price Copy:** Click the `🎯 Max Mat Buy` column to copy the exact integer buy price directly to your clipboard.
-  - **Permanent Filter Lock:** Game bridge snapshots (Microbot/RuneLite) no longer overwrite or revert your manual F2P / Members filter selection.
+  - **Permanent Filter Lock:** Game bridge snapshots (RuneLite) no longer overwrite or revert your manual F2P / Members filter selection.
 - **🛡️ Strict F2P vs Members Isolation (v1.3.25+):**
   - **F2P Only Mode:** Toggling `F2P Only` strictly hides 100% of Members items, recipes, quests, and brackets across all tabs (Smithing hides Cannonballs and P2P quests; Crafting hides Dragonhide bodies, Battlestaves, and Unpowered orbs).
   - **Fletching P2P Warning:** When Free-to-Play is selected, Fletching cleanly indicates that it is a 100% Members-only skill in Old School RuneScape.
@@ -118,7 +118,7 @@ A real-time, desktop companion tool for **Old School RuneScape (OSRS)** that mon
   - Live Grand Exchange server clock (UTC) synchronized with global player activity curves.
   - Real-time Activity Meter and Status Badges (`🟢 Peak Liquidity Window`, `🟡 Evening Wind-Down`, `🌙 Off-Peak Sleepers Window`, `🌅 Morning Ramp-Up`).
   - Actionable market timing advice on whether to place fast flip bids or queue up patient overnight sleeper buy orders.
-- **🔌 Microbot / RuneLite Live Auto-Bridge (100% Passive & TOS Compliant):**
+- **🔌 RuneLite Live Auto-Bridge (100% Passive & TOS Compliant):**
   - **Zero In-Game Automation / 100% Read-Only:** Only listens to passive game events; performs zero clicks or actions.
   - **Auto GE Limit Timers:** Starts tick-accurate 4-hour cooldown timers the moment your Grand Exchange buy fills or starts buying.
   - **Auto Session Profit Logging:** Automatically records filled GE buy orders to your Session Tracker with exact prices paid and profit calculated.
@@ -172,10 +172,24 @@ Choose the version that best fits your needs:
 
 | Edition | File | Best For | Direct Download Link |
 | :--- | :--- | :--- | :--- |
-| **🚀 Windows Installer (Recommended)** | `OSRS_Alch_Tracker_Setup.exe` | Standard installation with Start Menu & Desktop shortcuts, clean uninstall, and repair mode. | [⬇️ Download Installer](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/OSRS_Alch_Tracker_Setup.exe) |
-| **⚡ Portable Edition** | `OSRS_Alch_Tracker_Portable.exe` | Zero installation required. Run directly from your Downloads folder, USB drive, or desktop. | [⬇️ Download Portable (.exe)](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/OSRS_Alch_Tracker_Portable.exe) |
+| **🚀 Windows Installer (Recommended)** | `AlchMate_Setup.exe` | Standard installation with Start Menu & Desktop shortcuts, clean uninstall, and repair mode. | [⬇️ Download Installer](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate_Setup.exe) |
+| **⚡ Portable Edition** | `AlchMate.exe` | Zero installation required. Run directly from your Downloads folder, USB drive, or desktop. | [⬇️ Download Portable (.exe)](https://github.com/jef11222/osrs-alch-tracker/releases/latest/download/AlchMate.exe) |
 
 > 🔗 **All Versions & Release Notes:** [View Latest GitHub Release](https://github.com/jef11222/osrs-alch-tracker/releases/latest)
+
+---
+
+## 🔌 RuneLite Plugin (AlchMate)
+
+AlchMate includes an official in-game RuneLite bridge plugin (`AlchBridgePlugin.jar`):
+- **Live In-Game HUD Overlay:** Displays live alchs/hr, net profit, batch completion ETA, skilling pace, and 2-line Bond roadmap.
+- **Side Panel Top 10 Alchs:** Direct in-game panel displaying live profitable alch items with 1-click clipboard copy.
+- **Auto-Detection:** Automatically distinguishes items acquired via Grand Exchange from Player-to-Player trades (e.g. W308 Anvil).
+- **Invested GE Wealth Tracking:** Accurately accounts for coins sitting in active buy offers in the Bond tracker.
+
+To install manually:
+1. Place `AlchBridgePlugin.jar` into your `.runelite/plugins/` directory (or run `Update-Bridge-Plugin.bat`).
+2. Start RuneLite. The "AlchMate" plugin will appear in your plugin list and sidebar.
 
 ---
 
@@ -194,7 +208,7 @@ python main.py
 ### Building Standalone Executable
 ```bash
 pip install pyinstaller
-python -m PyInstaller --noconsole --onefile --add-binary "%LOCALAPPDATA%\..\Local\Programs\Python\Python312\python3.dll;." --add-binary "%LOCALAPPDATA%\..\Local\Programs\Python\Python312\vcruntime140_1.dll;." --name "OSRS_Alch_Tracker" main.py
+python -m PyInstaller AlchMate.spec --noconfirm
 ```
 
 ---

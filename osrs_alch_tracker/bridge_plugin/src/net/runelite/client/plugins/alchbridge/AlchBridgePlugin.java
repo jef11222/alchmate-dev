@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.microbot.alchbridge;
+package net.runelite.client.plugins.alchbridge;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -57,9 +57,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @PluginDescriptor(
-    name = "<html>[<font color=green>A</font>] Alch Dashboard Bridge",
-    description = "Pipes live GE trades, 4h timers, cash stack, nature runes, and provides in-game Alchs/hr overlay & Top 10 Alchs side panel",
-    tags = {"alch", "ge", "tracker", "bridge", "dashboard", "microbot", "panel", "overlay"},
+    name = "AlchMate",
+    description = "High Alch session tracking, Bond progression HUD & companion bridge",
+    tags = {"alch", "ge", "tracker", "bridge", "dashboard", "panel", "overlay", "alchmate", "bond"},
     enabledByDefault = true
 )
 public class AlchBridgePlugin extends Plugin {
@@ -123,6 +123,8 @@ public class AlchBridgePlugin extends Plugin {
     private CostBasisMode activeCostBasisOverride = null;
     private final Map<Integer, Integer> lastW308TradePrices = new ConcurrentHashMap<>();
     private final Map<Integer, Integer> lastGeBuyPrices = new ConcurrentHashMap<>();
+    private final Map<Integer, Long> lastW308TradeTimes = new ConcurrentHashMap<>();
+    private final Map<Integer, Long> lastGeBuyTimes = new ConcurrentHashMap<>();
     private String lastW308TradeItemName = null;
     private int lastW308TradePrice = 0;
     private int lastAlchedItemId = -1;
@@ -185,6 +187,8 @@ public class AlchBridgePlugin extends Plugin {
     private int lastBankCoins = 0;
     private long sessionStartWealth = 0;
     private Boolean bondTrackerOverride = null;
+    private Boolean stage2CushionOverride = null;
+    private long syncedCushionAmount = -1;
 
     // Real-time Skilling Progression & Activity Auto-Detection
     private Skill detectedSkill = null;
@@ -197,6 +201,10 @@ public class AlchBridgePlugin extends Plugin {
     @Provides
     AlchBridgeConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(AlchBridgeConfig.class);
+    }
+
+    public AlchBridgeConfig getConfig() {
+        return config;
     }
 
     @Override
@@ -407,6 +415,7 @@ public class AlchBridgePlugin extends Plugin {
                 int unitP = (int) Math.round((double) offer.getSpent() / (double) qtySold);
                 if (unitP > 0) {
                     lastGeBuyPrices.put(unnotedId, unitP);
+                    lastGeBuyTimes.put(unnotedId, System.currentTimeMillis());
                 }
             }
 
@@ -523,6 +532,7 @@ public class AlchBridgePlugin extends Plugin {
                 data.put("coins", coins);
                 data.put("natureRunes", natureRunes);
                 data.put("totalWealth", getTotalWealth());
+                data.put("geInvestedCoins", getGeInvestedCoins());
                 data.put("batchGrossGp", batchGrossGp);
                 data.put("batchItemName", batchItemName != null ? batchItemName : "");
                 data.put("batchItemQty", batchItemQty);
@@ -625,6 +635,8 @@ public class AlchBridgePlugin extends Plugin {
                 scanInventoryBatch(null);
             } else if ("showBondTracker".equals(event.getKey())) {
                 bondTrackerOverride = null;
+            } else if ("showStage2Cushion".equals(event.getKey())) {
+                stage2CushionOverride = null;
             }
         }
     }
@@ -1021,6 +1033,8 @@ public class AlchBridgePlugin extends Plugin {
                 toggleCostBasisMode();
             } else if ("Toggle Bond Tracker".equals(option)) {
                 toggleBondTracker();
+            } else if ("Toggle Cushion Tracker".equals(option)) {
+                toggleStage2Cushion();
             }
         }
     }
@@ -1051,7 +1065,14 @@ public class AlchBridgePlugin extends Plugin {
 
     public void toggleCostBasisMode() {
         CostBasisMode current = getCostBasisMode();
-        CostBasisMode next = (current == CostBasisMode.W308_TRADE) ? CostBasisMode.GRAND_EXCHANGE : CostBasisMode.W308_TRADE;
+        CostBasisMode next;
+        if (current == CostBasisMode.AUTO_DETECT) {
+            next = CostBasisMode.W308_TRADE;
+        } else if (current == CostBasisMode.W308_TRADE) {
+            next = CostBasisMode.GRAND_EXCHANGE;
+        } else {
+            next = CostBasisMode.AUTO_DETECT;
+        }
         activeCostBasisOverride = next;
         if (configManager != null) {
             try {
@@ -1066,9 +1087,38 @@ public class AlchBridgePlugin extends Plugin {
         log.info("Cost basis toggled to: {}", next.getDisplayName());
     }
 
-    public long getItemBuyCost(int unnotedId) {
+    public String resolveItemSource(int unnotedId) {
         CostBasisMode mode = getCostBasisMode();
         if (mode == CostBasisMode.W308_TRADE) {
+            return "P2P";
+        }
+        if (mode == CostBasisMode.GRAND_EXCHANGE) {
+            return "GE";
+        }
+
+        // AUTO_DETECT mode: compare acquisition timestamps
+        Long tradeTime = lastW308TradeTimes.get(unnotedId);
+        Long geTime = lastGeBuyTimes.get(unnotedId);
+
+        if (tradeTime != null && (geTime == null || tradeTime >= geTime)) {
+            return "P2P";
+        }
+        if (geTime != null) {
+            return "GE";
+        }
+
+        if (config.manualTradeBuyPrice() > 0) {
+            return "P2P";
+        }
+        if (lastW308TradePrices.containsKey(unnotedId) && !lastGeBuyPrices.containsKey(unnotedId)) {
+            return "P2P";
+        }
+        return "GE";
+    }
+
+    public long getItemBuyCost(int unnotedId) {
+        String source = resolveItemSource(unnotedId);
+        if ("P2P".equals(source)) {
             int manual = config.manualTradeBuyPrice();
             if (manual > 0) return manual;
             Integer tradePrice = lastW308TradePrices.get(unnotedId);
@@ -1115,8 +1165,100 @@ public class AlchBridgePlugin extends Plugin {
         return calculateAlchProfit() + sessionTradeProfit;
     }
 
+    public long getGeInvestedCoins() {
+        if (client == null || client.getGameState() != GameState.LOGGED_IN) {
+            return 0L;
+        }
+        try {
+            GrandExchangeOffer[] offers = client.getGrandExchangeOffers();
+            if (offers == null) {
+                return 0L;
+            }
+            long totalInvested = 0L;
+            for (GrandExchangeOffer offer : offers) {
+                if (offer == null) {
+                    continue;
+                }
+                GrandExchangeOfferState state = offer.getState();
+                if (state == null || state == GrandExchangeOfferState.EMPTY) {
+                    continue;
+                }
+
+                int itemId = offer.getItemId();
+                int totalQty = offer.getTotalQuantity();
+                int qtySold = offer.getQuantitySold();
+                long price = offer.getPrice();
+                long spent = offer.getSpent();
+
+                if (state == GrandExchangeOfferState.BUYING) {
+                    long unspentCoins = Math.max(0L, (long) (totalQty - qtySold) * price);
+                    long itemVal = 0L;
+                    if (qtySold > 0 && itemId > 0) {
+                        try {
+                            ItemComposition comp = itemManager.getItemComposition(itemId);
+                            if (comp != null && comp.getHaPrice() > 0) {
+                                itemVal = (long) qtySold * (long) comp.getHaPrice();
+                            } else {
+                                itemVal = spent;
+                            }
+                        } catch (Exception ignored) {
+                            itemVal = spent;
+                        }
+                    }
+                    long refundCoins = Math.max(0L, ((long) qtySold * price) - spent);
+                    totalInvested += (unspentCoins + itemVal + refundCoins);
+                } else if (state == GrandExchangeOfferState.BOUGHT) {
+                    long itemVal = 0L;
+                    if (totalQty > 0 && itemId > 0) {
+                        try {
+                            ItemComposition comp = itemManager.getItemComposition(itemId);
+                            if (comp != null && comp.getHaPrice() > 0) {
+                                itemVal = (long) totalQty * (long) comp.getHaPrice();
+                            } else {
+                                itemVal = spent;
+                            }
+                        } catch (Exception ignored) {
+                            itemVal = spent;
+                        }
+                    }
+                    long refundCoins = Math.max(0L, ((long) totalQty * price) - spent);
+                    totalInvested += (itemVal + refundCoins);
+                } else if (state == GrandExchangeOfferState.CANCELLED_BUY) {
+                    long unspentCoins = Math.max(0L, (long) (totalQty - qtySold) * price);
+                    long itemVal = spent;
+                    long refundCoins = Math.max(0L, ((long) qtySold * price) - spent);
+                    totalInvested += (unspentCoins + itemVal + refundCoins);
+                } else if (state == GrandExchangeOfferState.SELLING || state == GrandExchangeOfferState.SOLD || state == GrandExchangeOfferState.CANCELLED_SELL) {
+                    if (spent > 0) {
+                        totalInvested += spent;
+                    }
+                }
+            }
+            return totalInvested;
+        } catch (Exception e) {
+            log.debug("Error calculating GE invested coins: {}", e.getMessage());
+            return 0L;
+        }
+    }
+
     public long getTotalWealth() {
-        return getTotalCoins() + Math.max(0L, batchGrossGp);
+        return getTotalCoins() + Math.max(0L, batchGrossGp) + getGeInvestedCoins();
+    }
+
+    public int getLastAlchedItemId() {
+        return lastAlchedItemId;
+    }
+
+    public void toggleOverlay() {
+        boolean current = config.showOverlay();
+        boolean next = !current;
+        if (configManager != null) {
+            try {
+                configManager.setConfiguration("alchbridge", "showOverlay", next);
+            } catch (Exception e) {
+                log.debug("Could not persist overlay config: {}", e.getMessage());
+            }
+        }
     }
 
     public long getBatchGrossGp() {
@@ -1282,6 +1424,15 @@ public class AlchBridgePlugin extends Plugin {
                 entries, totalQty, totalProfit, totalGross,
                 estSecs, natRunes, fireSource, cachedAlchsPerHour
             );
+            if (isBondTrackerEnabled()) {
+                panel.updateBondFreedom(
+                    getTotalWealth(),
+                    getBondPrice(),
+                    getCushionAmount(),
+                    isStage2Enabled(),
+                    getProfitPerHour()
+                );
+            }
             if (detectedSkill != null) {
                 int curXp = client.getSkillExperience(detectedSkill);
                 int curLvl = client.getRealSkillLevel(detectedSkill);
@@ -1362,6 +1513,52 @@ public class AlchBridgePlugin extends Plugin {
         log.info("Bond tracker toggled to: {}", next);
     }
 
+    public long getCushionAmount() {
+        if (syncedCushionAmount > 0) {
+            return syncedCushionAmount;
+        }
+        return (long) config.cushionAmount();
+    }
+
+    public void setSyncedCushionAmount(long amount) {
+        if (amount > 0 && this.syncedCushionAmount != amount) {
+            this.syncedCushionAmount = amount;
+            log.debug("Synced bond cushion updated from desktop app: {} gp", amount);
+        }
+    }
+
+    public boolean isStage2Enabled() {
+        if (stage2CushionOverride != null) {
+            return stage2CushionOverride;
+        }
+        return config.showStage2Cushion();
+    }
+
+    public long getTotalFreedomGoal() {
+        return getBondPrice() + (isStage2Enabled() ? getCushionAmount() : 0);
+    }
+
+    public boolean isStage1Complete() {
+        return getTotalWealth() >= getBondPrice();
+    }
+
+    public boolean isFreedomAchieved() {
+        return getTotalWealth() >= getTotalFreedomGoal();
+    }
+
+    public void toggleStage2Cushion() {
+        boolean next = !isStage2Enabled();
+        stage2CushionOverride = next;
+        if (configManager != null) {
+            try {
+                configManager.setConfiguration("alchbridge", "showStage2Cushion", next);
+            } catch (Exception e) {
+                log.debug("Could not persist stage 2 cushion config: {}", e.getMessage());
+            }
+        }
+        log.info("Stage 2 cushion tracker toggled to: {}", next);
+    }
+
     public long getSessionNetGpFlow() {
         if (sessionStartWealth <= 0) {
             return sessionProfit;
@@ -1387,6 +1584,7 @@ public class AlchBridgePlugin extends Plugin {
                 if (qty > 0) {
                     int unitCost = (int) Math.round((double) totalCoins / (double) qty);
                     lastW308TradePrices.put(unnotedId, unitCost);
+                    lastW308TradeTimes.put(unnotedId, System.currentTimeMillis());
                     lastW308TradePrice = unitCost;
                     ItemComposition comp = itemManager.getItemComposition(unnotedId);
                     lastW308TradeItemName = comp != null ? comp.getName() : ("Item " + unnotedId);
@@ -1422,6 +1620,7 @@ public class AlchBridgePlugin extends Plugin {
                     int unitCost = qty > 0 ? (int) Math.round((double) allocatedCoins / (double) qty) : 0;
 
                     lastW308TradePrices.put(unnotedId, unitCost);
+                    lastW308TradeTimes.put(unnotedId, System.currentTimeMillis());
                     lastW308TradePrice = unitCost;
                     ItemComposition comp = itemManager.getItemComposition(unnotedId);
                     lastW308TradeItemName = comp != null ? comp.getName() : ("Item " + unnotedId);
@@ -1587,6 +1786,14 @@ public class AlchBridgePlugin extends Plugin {
             if (inv != null) {
                 detectSkillingFromInventory(inv);
                 scanInventoryBatch(inv);
+            } else if (panel != null && isBondTrackerEnabled()) {
+                panel.updateBondFreedom(
+                    getTotalWealth(),
+                    getBondPrice(),
+                    getCushionAmount(),
+                    isStage2Enabled(),
+                    getProfitPerHour()
+                );
             }
 
             lastSkillXpMap.put(Skill.CRAFTING, client.getSkillExperience(Skill.CRAFTING));
@@ -1626,7 +1833,9 @@ public class AlchBridgePlugin extends Plugin {
                 data.put("coins", inv.count(ItemID.COINS_995));
                 data.put("natureRunes", inv.count(ItemID.NATURE_RUNE));
             }
+            data.put("bankCoins", lastBankCoins);
             data.put("totalWealth", getTotalWealth());
+            data.put("geInvestedCoins", getGeInvestedCoins());
             data.put("batchGrossGp", batchGrossGp);
             data.put("batchItemName", batchItemName != null ? batchItemName : "");
             data.put("batchItemQty", batchItemQty);
@@ -1735,7 +1944,29 @@ public class AlchBridgePlugin extends Plugin {
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
 
-            httpClient.sendAsync(request, HttpResponse.BodyHandlers.discarding())
+            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenAccept(resp -> {
+                    if (resp != null && resp.statusCode() == 200 && resp.body() != null) {
+                        try {
+                            Type type = new TypeToken<Map<String, Object>>(){}.getType();
+                            Map<String, Object> map = gson.fromJson(resp.body(), type);
+                            if (map != null) {
+                                if (map.containsKey("bond_cushion")) {
+                                    Object cObj = map.get("bond_cushion");
+                                    if (cObj instanceof Number) {
+                                        long cushion = ((Number) cObj).longValue();
+                                        if (cushion > 0) {
+                                            setSyncedCushionAmount(cushion);
+                                        }
+                                    }
+                                }
+                                if (Boolean.TRUE.equals(map.get("request_resync"))) {
+                                    sendAccountSnapshot();
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                    }
+                })
                 .exceptionally(ex -> null); // Non-blocking: quietly drop if dashboard is closed
         } catch (Exception ignored) {
         }

@@ -12,7 +12,7 @@ import urllib.parse
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-APP_VERSION = "1.3.59"
+APP_VERSION = "1.0.0"
 GITHUB_REPO = "jef11222/osrs-alch-tracker"
 
 
@@ -42,14 +42,18 @@ def parse_version_tuple(v_str):
         parts.append(0)
     return tuple(parts[:3])
 
-def check_for_updates(current_version=APP_VERSION):
+def check_for_updates(current_version=APP_VERSION, channel="stable"):
     """
     Queries GitHub Releases API for the latest release.
     Returns: (has_update: bool, remote_version: str, download_url: str, release_notes: str)
     """
+    if channel == "test":
+        # Test channel does not prompt to downgrade to public main releases
+        return False, "", "", ""
+
     req = urllib.request.Request(
         RELEASES_API_URL,
-        headers={"User-Agent": "OSRS-Alch-Tracker-App"}
+        headers={"User-Agent": "AlchMate-App"}
     )
     try:
         with urllib.request.urlopen(req, timeout=6) as resp:
@@ -61,7 +65,7 @@ def check_for_updates(current_version=APP_VERSION):
 
                 if remote_tuple > curr_tuple:
                     # Look for Windows executable asset (.exe) matching the running edition
-                    curr_name = os.path.basename(sys.executable).lower() if getattr(sys, "frozen", False) else "osrs_alch_tracker.exe"
+                    curr_name = os.path.basename(sys.executable).lower() if getattr(sys, "frozen", False) else "alchmate.exe"
                     download_url = None
                     exact_match_url = None
                     fallback_exe_url = None
@@ -75,7 +79,7 @@ def check_for_updates(current_version=APP_VERSION):
                         if name == curr_name:
                             exact_match_url = cand_url
                             break
-                        elif name in ("osrs_alch_tracker.exe", "osrs_alch_tracker_portable.exe"):
+                        elif name in ("alchmate.exe", "alchmate_portable.exe", "osrs_alch_tracker.exe"):
                             fallback_exe_url = cand_url
                         elif name.endswith("_setup.exe") or name.endswith("_installer.exe"):
                             setup_url = cand_url
@@ -103,7 +107,7 @@ def download_file_with_progress(url, dest_path, progress_callback=None):
 
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "OSRS-Alch-Tracker-App"}
+        headers={"User-Agent": "AlchMate-App"}
     )
     with urllib.request.urlopen(req, timeout=45) as resp, open(dest_path, "wb") as f:
         total_size = int(resp.headers.get("Content-Length", 0))

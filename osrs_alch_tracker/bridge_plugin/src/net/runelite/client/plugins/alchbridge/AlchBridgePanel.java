@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.microbot.alchbridge;
+package net.runelite.client.plugins.alchbridge;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -56,8 +56,20 @@ public class AlchBridgePanel extends PluginPanel {
     private final JLabel skillingEtaLabel = new JLabel("Est. Next Lvl: --");
     private final JLabel skillingRateLabel = new JLabel("Pace: --");
 
+    // Bond & Freedom Roadmap UI Elements
+    private final JPanel bondCard = new JPanel();
+    private final JLabel bondTitleLabel = new JLabel("\uD83C\uDFAB Bond & Freedom Roadmap");
+    private final JLabel bondOverallLabel = new JLabel("Wealth: -- / -- (0.0%)");
+    private final JLabel bondStage1Label = new JLabel("Stage 1 (Bond): -- / --");
+    private final JLabel bondStage2Label = new JLabel("Stage 2 (Cushion): -- / --");
+    private final JLabel bondEtaLabel = new JLabel("Bond ETA: -- | P2P ETA: --");
+    private final JLabel bondStatusPill = new JLabel("Initializing roadmap...");
+
+    private final AlchBridgePlugin plugin;
+
     public AlchBridgePanel(AlchBridgePlugin plugin) {
         super(false);
+        this.plugin = plugin;
         setLayout(new BorderLayout());
         setBackground(ColorScheme.DARK_GRAY_COLOR);
 
@@ -67,7 +79,7 @@ public class AlchBridgePanel extends PluginPanel {
         headerPanel.setBorder(new EmptyBorder(10, 10, 8, 10));
         headerPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
-        JLabel titleLabel = new JLabel("OSRS Alch Tracker");
+        JLabel titleLabel = new JLabel("AlchMate");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
         titleLabel.setForeground(GOLD);
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
@@ -80,16 +92,34 @@ public class AlchBridgePanel extends PluginPanel {
         bannerLabel.setForeground(new Color(180, 180, 180));
         bannerLabel.setAlignmentX(CENTER_ALIGNMENT);
 
-        JPanel btnRow = new JPanel(new BorderLayout());
+        JPanel btnRow = new JPanel(new GridLayout(1, 3, 4, 0));
         btnRow.setOpaque(false);
         btnRow.setBorder(new EmptyBorder(6, 0, 0, 0));
 
-        JButton refreshBtn = new JButton("🔄 Refresh Top 10");
-        refreshBtn.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        JButton refreshBtn = new JButton("\uD83D\uDD04 Top 10");
+        refreshBtn.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         refreshBtn.setFocusPainted(false);
         refreshBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        refreshBtn.setToolTipText("Refresh the live Top 10 High Alch items list");
         refreshBtn.addActionListener(e -> plugin.fetchTop10Async());
-        btnRow.add(refreshBtn, BorderLayout.CENTER);
+
+        JButton toggleOverlayBtn = new JButton("\uD83D\uDC41\uFE0F Overlay");
+        toggleOverlayBtn.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        toggleOverlayBtn.setFocusPainted(false);
+        toggleOverlayBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        toggleOverlayBtn.setToolTipText("Toggle the in-game HUD overlay on/off");
+        toggleOverlayBtn.addActionListener(e -> plugin.toggleOverlay());
+
+        JButton companionBtn = new JButton("\uD83D\uDCE5 Companion");
+        companionBtn.setFont(new Font("Segoe UI", Font.PLAIN, 10));
+        companionBtn.setFocusPainted(false);
+        companionBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        companionBtn.setToolTipText("Download or view the AlchMate Desktop Companion");
+        companionBtn.addActionListener(e -> net.runelite.client.util.LinkBrowser.browse("https://github.com/jef11222/osrs-alch-tracker/releases/latest"));
+
+        btnRow.add(refreshBtn);
+        btnRow.add(toggleOverlayBtn);
+        btnRow.add(companionBtn);
 
         headerPanel.add(titleLabel);
         headerPanel.add(Box.createVerticalStrut(3));
@@ -103,6 +133,8 @@ public class AlchBridgePanel extends PluginPanel {
         topContainer.setBackground(ColorScheme.DARK_GRAY_COLOR);
         topContainer.add(headerPanel);
         topContainer.add(Box.createVerticalStrut(6));
+        topContainer.add(createBondFreedomCard());
+        topContainer.add(Box.createVerticalStrut(4));
         topContainer.add(createBatchCard());
         topContainer.add(Box.createVerticalStrut(4));
         topContainer.add(createSkillingProgressionCard());
@@ -115,7 +147,7 @@ public class AlchBridgePanel extends PluginPanel {
         listContainer.setBackground(ColorScheme.DARK_GRAY_COLOR);
         listContainer.setBorder(new EmptyBorder(6, 6, 6, 6));
 
-        showEmptyState("Waiting for Alch Tracker data...\nMake sure the Python app is open.");
+        showOfflineState("Waiting for AlchMate companion...\nRun the companion app or download it below:");
 
         JScrollPane scrollPane = new JScrollPane(listContainer);
         scrollPane.setBackground(ColorScheme.DARK_GRAY_COLOR);
@@ -137,16 +169,44 @@ public class AlchBridgePanel extends PluginPanel {
         listContainer.repaint();
     }
 
+    private void showOfflineState(String msg) {
+        listContainer.removeAll();
+        JLabel emptyLabel = new JLabel("<html><center>" + msg.replace("\n", "<br>") + "</center></html>");
+        emptyLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        emptyLabel.setForeground(Color.GRAY);
+        emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        emptyLabel.setAlignmentX(CENTER_ALIGNMENT);
+
+        JButton downloadBtn = new JButton("\uD83D\uDCE5 Download AlchMate");
+        downloadBtn.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        downloadBtn.setForeground(Color.WHITE);
+        downloadBtn.setBackground(new Color(41, 128, 185));
+        downloadBtn.setFocusPainted(false);
+        downloadBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        downloadBtn.setAlignmentX(CENTER_ALIGNMENT);
+        downloadBtn.setMaximumSize(new Dimension(200, 28));
+        downloadBtn.setToolTipText("Open latest AlchMate release on GitHub");
+        downloadBtn.addActionListener(e -> net.runelite.client.util.LinkBrowser.browse("https://github.com/jef11222/osrs-alch-tracker/releases/latest"));
+
+        listContainer.add(Box.createVerticalStrut(16));
+        listContainer.add(emptyLabel);
+        listContainer.add(Box.createVerticalStrut(10));
+        listContainer.add(downloadBtn);
+        listContainer.revalidate();
+        listContainer.repaint();
+    }
+
     public void updateTop10(List<Map<String, Object>> items, boolean connected) {
         SwingUtilities.invokeLater(() -> {
             if (!connected) {
-                statusLabel.setText("🔴 Tracker Offline (Port 18833)");
+                int port = (plugin != null && plugin.getConfig() != null) ? plugin.getConfig().bridgePort() : 18833;
+                statusLabel.setText("\u26A0 Companion Offline (Port " + port + ")");
                 statusLabel.setForeground(new Color(231, 76, 60));
-                showEmptyState("Cannot reach Alch Tracker app.\nCheck that the tracker is running.");
+                showOfflineState("Cannot reach AlchMate desktop companion.\nRun the companion app or download it below:");
                 return;
             }
 
-            statusLabel.setText("🟢 Connected to Alch Tracker");
+            statusLabel.setText("\u2705 Connected to AlchMate");
             statusLabel.setForeground(PROFIT_GREEN);
 
             if (items == null || items.isEmpty()) {
@@ -527,6 +587,182 @@ public class AlchBridgePanel extends PluginPanel {
             return String.format("%.1fk gp", amount / 1_000.0);
         } else {
             return String.format("%,d gp", amount);
+        }
+    }
+
+    private JPanel createBondFreedomCard() {
+        bondCard.setLayout(new BoxLayout(bondCard, BoxLayout.Y_AXIS));
+        bondCard.setBackground(CARD_BG);
+        bondCard.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(0, 6, 0, 6),
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(243, 156, 18), 1),
+                new EmptyBorder(7, 8, 7, 8)
+            )
+        ));
+
+        bondTitleLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        bondTitleLabel.setForeground(GOLD);
+        bondTitleLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondOverallLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        bondOverallLabel.setForeground(Color.WHITE);
+        bondOverallLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondStage1Label.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        bondStage1Label.setForeground(new Color(180, 180, 180));
+        bondStage1Label.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondStage2Label.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        bondStage2Label.setForeground(new Color(180, 180, 180));
+        bondStage2Label.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondEtaLabel.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        bondEtaLabel.setForeground(new Color(186, 104, 200));
+        bondEtaLabel.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondStatusPill.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        bondStatusPill.setForeground(new Color(243, 156, 18));
+        bondStatusPill.setAlignmentX(LEFT_ALIGNMENT);
+
+        bondCard.add(bondTitleLabel);
+        bondCard.add(Box.createVerticalStrut(3));
+        bondCard.add(bondOverallLabel);
+        bondCard.add(Box.createVerticalStrut(2));
+        bondCard.add(bondStage1Label);
+        bondCard.add(Box.createVerticalStrut(2));
+        bondCard.add(bondStage2Label);
+        bondCard.add(Box.createVerticalStrut(3));
+        bondCard.add(bondEtaLabel);
+        bondCard.add(Box.createVerticalStrut(3));
+        bondCard.add(bondStatusPill);
+
+        return bondCard;
+    }
+
+    public void updateBondFreedom(
+        long totalWealth, long bondPrice, long cushionAmount,
+        boolean stage2Enabled, long profitPerHour
+    ) {
+        SwingUtilities.invokeLater(() -> {
+            if (bondPrice <= 0) return;
+
+            long totalGoal = bondPrice + (stage2Enabled ? cushionAmount : 0);
+            double overallPct = totalGoal > 0 ? ((double) totalWealth / (double) totalGoal * 100.0) : 0.0;
+            bondOverallLabel.setText(String.format("Wealth: %s / %s (%.1f%%)",
+                formatGp(totalWealth), formatGp(totalGoal), overallPct));
+
+            // Stage 1 (Bond Ticket)
+            double s1Pct = Math.min(100.0, (double) totalWealth / (double) bondPrice * 100.0);
+            if (totalWealth >= bondPrice) {
+                bondStage1Label.setText(String.format("Stage 1 (Bond): %s / %s (100%% \u2713)",
+                    formatGp(bondPrice), formatGp(bondPrice)));
+                bondStage1Label.setForeground(PROFIT_GREEN);
+            } else {
+                long remBond = bondPrice - totalWealth;
+                bondStage1Label.setText(String.format("Stage 1 (Bond): %s / %s (%.1f%%) • Need %s",
+                    formatGp(totalWealth), formatGp(bondPrice), s1Pct, formatGp(remBond)));
+                bondStage1Label.setForeground(new Color(255, 193, 7));
+            }
+
+            // Stage 2 (P2P Cushion)
+            if (stage2Enabled && cushionAmount > 0) {
+                bondStage2Label.setVisible(true);
+                if (totalWealth < bondPrice) {
+                    bondStage2Label.setText(String.format("Stage 2 (Cushion): 0 gp / %s (0.0%%) • Locked",
+                        formatGp(cushionAmount)));
+                    bondStage2Label.setForeground(new Color(140, 140, 140));
+                } else if (totalWealth < totalGoal) {
+                    long cushionSaved = totalWealth - bondPrice;
+                    long remCushion = totalGoal - totalWealth;
+                    double s2Pct = Math.min(100.0, (double) cushionSaved / (double) cushionAmount * 100.0);
+                    bondStage2Label.setText(String.format("Stage 2 (Cushion): %s / %s (%.1f%%) • Need %s",
+                        formatGp(cushionSaved), formatGp(cushionAmount), s2Pct, formatGp(remCushion)));
+                    bondStage2Label.setForeground(new Color(243, 156, 18));
+                } else {
+                    bondStage2Label.setText(String.format("Stage 2 (Cushion): %s / %s (100%% \u2713)",
+                        formatGp(cushionAmount), formatGp(cushionAmount)));
+                    bondStage2Label.setForeground(PROFIT_GREEN);
+                }
+            } else {
+                bondStage2Label.setVisible(false);
+            }
+
+            // Dual ETA & Status Banner
+            if (totalWealth < bondPrice) {
+                // Phase A: Accumulating First Bond
+                bondCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 6, 0, 6),
+                    BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(243, 156, 18), 1),
+                        new EmptyBorder(7, 8, 7, 8)
+                    )
+                ));
+                long remBond = bondPrice - totalWealth;
+                if (profitPerHour > 0) {
+                    double hrsBond = (double) remBond / (double) profitPerHour;
+                    if (stage2Enabled && cushionAmount > 0) {
+                        double hrsTotal = (double) (totalGoal - totalWealth) / (double) profitPerHour;
+                        bondEtaLabel.setText(String.format("Bond ETA: %s | P2P ETA: %s",
+                            formatHours(hrsBond), formatHours(hrsTotal)));
+                    } else {
+                        bondEtaLabel.setText(String.format("Bond ETA: %s", formatHours(hrsBond)));
+                    }
+                    bondEtaLabel.setForeground(new Color(186, 104, 200));
+                } else {
+                    bondEtaLabel.setText("ETA: Calculating (start alching)...");
+                    bondEtaLabel.setForeground(Color.GRAY);
+                }
+                bondStatusPill.setText("\uD83D\uDD12 Stage 1: Accumulating First Bond");
+                bondStatusPill.setForeground(new Color(52, 152, 219));
+            } else if (stage2Enabled && totalWealth < totalGoal) {
+                // Phase B: Bond Secured, Building Operating Cushion
+                bondCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 6, 0, 6),
+                    BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(230, 126, 34), 1),
+                        new EmptyBorder(7, 8, 7, 8)
+                    )
+                ));
+                long remTotal = totalGoal - totalWealth;
+                if (profitPerHour > 0) {
+                    double hrsP2P = (double) remTotal / (double) profitPerHour;
+                    bondEtaLabel.setText(String.format("Bond: SECURED! \u2713 | P2P ETA: %s", formatHours(hrsP2P)));
+                    bondEtaLabel.setForeground(new Color(230, 126, 34));
+                } else {
+                    bondEtaLabel.setText("Bond: SECURED! \u2713 | Building Cushion...");
+                    bondEtaLabel.setForeground(new Color(243, 156, 18));
+                }
+                bondStatusPill.setText("\u26A0 Stage 2: Bond Secured! Building Operating Cushion");
+                bondStatusPill.setForeground(new Color(243, 156, 18));
+            } else {
+                // Phase C: Freedom Achieved!
+                bondCard.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 6, 0, 6),
+                    BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(PROFIT_GREEN, 1),
+                        new EmptyBorder(7, 8, 7, 8)
+                    )
+                ));
+                bondEtaLabel.setText("\uD83C\uDF89 FREEDOM ACHIEVED! Ready for Members!");
+                bondEtaLabel.setForeground(PROFIT_GREEN);
+                bondStatusPill.setText("Ready to redeem Bond & thrive in P2P!");
+                bondStatusPill.setForeground(PROFIT_GREEN);
+            }
+        });
+    }
+
+    private String formatHours(double hours) {
+        if (hours <= 0) return "0m";
+        if (hours >= 24.0) {
+            return String.format("~%.1fd", hours / 24.0);
+        } else if (hours >= 1.0) {
+            long h = (long) hours;
+            long m = Math.round((hours - h) * 60.0);
+            return String.format("~%dh %02dm", h, m);
+        } else {
+            long m = Math.max(1, Math.round(hours * 60.0));
+            return String.format("~%dm", m);
         }
     }
 

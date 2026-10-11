@@ -2,6 +2,8 @@ import os
 import sys
 import time
 import math
+import glob
+import shutil
 import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -713,39 +715,77 @@ class SetQuantityDialog(tk.Toplevel):
         self.destroy()
 
 W308_STAPLES = [
-    {"id": 1319, "name": "Rune 2h sword", "alch": 38400, "w308_buy": 37600, "short": "R2H", "members": False},
-    {"id": 1079, "name": "Rune platelegs", "alch": 38400, "w308_buy": 37600, "short": "R Legs", "members": False},
-    {"id": 1093, "name": "Rune plateskirt", "alch": 38400, "w308_buy": 37600, "short": "R Skirts", "members": False},
-    {"id": 1113, "name": "Rune chainbody", "alch": 30000, "w308_buy": 29350, "short": "R Chain", "members": False},
-    {"id": 1373, "name": "Rune battleaxe", "alch": 24960, "w308_buy": 24400, "short": "R Baxe", "members": False},
-    {"id": 1185, "name": "Rune sq shield", "alch": 23040, "w308_buy": 22500, "short": "R Sq", "members": False},
-    {"id": 1275, "name": "Rune pickaxe", "alch": 19200, "w308_buy": 18750, "short": "R Pick", "members": False},
-    {"id": 1333, "name": "Rune scimitar", "alch": 15360, "w308_buy": 15000, "short": "R Scim", "members": False},
-    {"id": 1289, "name": "Rune sword", "alch": 12480, "w308_buy": 12200, "short": "R Sword", "members": False},
-    {"id": 1147, "name": "Rune med helm", "alch": 11520, "w308_buy": 11250, "short": "R Med", "members": False},
-    {"id": 1213, "name": "Rune dagger", "alch": 4800, "w308_buy": 4600, "short": "R Dagger", "members": False},
-    {"id": 1123, "name": "Adamant platebody", "alch": 9984, "w308_buy": 9650, "short": "Addy Body", "members": False},
-    {"id": 1397, "name": "Air battlestaff", "alch": 9300, "w308_buy": 8950, "short": "Air Bstaff", "members": True},
-    {"id": 1393, "name": "Fire battlestaff", "alch": 9300, "w308_buy": 8950, "short": "Fire Bstaff", "members": True},
-    {"id": 1395, "name": "Water battlestaff", "alch": 9300, "w308_buy": 8900, "short": "Water Bstaff", "members": True},
-    {"id": 1399, "name": "Earth battlestaff", "alch": 9300, "w308_buy": 8850, "short": "Earth Bstaff", "members": True},
-    {"id": 2503, "name": "Black d'hide body", "alch": 8085, "w308_buy": 7750, "short": "Black Dhide", "members": True},
-    {"id": 2501, "name": "Red d'hide body", "alch": 6738, "w308_buy": 6450, "short": "Red Dhide", "members": True},
-    {"id": 2499, "name": "Blue d'hide body", "alch": 5616, "w308_buy": 5350, "short": "Blue Dhide", "members": True},
-    {"id": 1135, "name": "Green d'hide body", "alch": 4680, "w308_buy": 4450, "short": "Green Dhide", "members": True},
-    {"id": 859, "name": "Magic longbow", "alch": 1536, "w308_buy": 1200, "short": "Mage Long", "members": True},
-    {"id": 855, "name": "Yew longbow", "alch": 768, "w308_buy": 600, "short": "Yew Long", "members": True},
-    {"id": 11115, "name": "Dragonstone bracelet", "alch": 11475, "w308_buy": 11350, "short": "Dstone Brac", "members": True},
-    {"id": 11092, "name": "Diamond bracelet", "alch": 2295, "w308_buy": 1950, "short": "Dia Brac", "members": True},
-    {"id": 11085, "name": "Ruby bracelet", "alch": 1395, "w308_buy": 1100, "short": "Ruby Brac", "members": True},
-    {"id": 1215, "name": "Dragon dagger", "alch": 18000, "w308_buy": 17300, "short": "DDS", "members": True},
-    {"id": 9245, "name": "Onyx bolts (e)", "alch": 9000, "w308_buy": 8550, "short": "Onyx Bolts", "members": True},
+    {"id": 1319, "name": "Rune 2h sword", "alch": 38400, "w308_buy": 37600, "w308_sell_p2p": 37875, "short": "R2H", "members": False,
+     "skill": "Smithing", "level": 99, "xp": 225.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 3, "mat_default": 12175},
+    {"id": 1079, "name": "Rune platelegs", "alch": 38400, "w308_buy": 37600, "w308_sell_p2p": 37875, "short": "R Legs", "members": False,
+     "skill": "Smithing", "level": 99, "xp": 225.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 3, "mat_default": 12175},
+    {"id": 1093, "name": "Rune plateskirt", "alch": 38400, "w308_buy": 37600, "w308_sell_p2p": 37875, "short": "R Skirts", "members": False,
+     "skill": "Smithing", "level": 99, "xp": 225.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 3, "mat_default": 12175},
+    {"id": 1113, "name": "Rune chainbody", "alch": 30000, "w308_buy": 29350, "w308_sell_p2p": 29500, "short": "R Chain", "members": False,
+     "skill": "Smithing", "level": 96, "xp": 225.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 3, "mat_default": 12175},
+    {"id": 1373, "name": "Rune battleaxe", "alch": 24960, "w308_buy": 24400, "w308_sell_p2p": 24550, "short": "R Baxe", "members": False,
+     "skill": "Smithing", "level": 95, "xp": 225.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 3, "mat_default": 12175},
+    {"id": 1185, "name": "Rune sq shield", "alch": 23040, "w308_buy": 22500, "w308_sell_p2p": 22650, "short": "R Sq", "members": False,
+     "skill": "Smithing", "level": 93, "xp": 150.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 2, "mat_default": 12175},
+    {"id": 1275, "name": "Rune pickaxe", "alch": 19200, "w308_buy": 18750, "w308_sell_p2p": 18850, "short": "R Pick", "members": False,
+     "skill": None, "level": 0, "xp": 0.0, "mat_id": None, "mat_name": None, "mat_qty": 0, "mat_default": 0},
+    {"id": 1333, "name": "Rune scimitar", "alch": 15360, "w308_buy": 15000, "w308_sell_p2p": 15100, "short": "R Scim", "members": False,
+     "skill": "Smithing", "level": 90, "xp": 150.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 2, "mat_default": 12175},
+    {"id": 1289, "name": "Rune sword", "alch": 12480, "w308_buy": 12200, "w308_sell_p2p": 12250, "short": "R Sword", "members": False,
+     "skill": "Smithing", "level": 89, "xp": 75.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 1, "mat_default": 12175},
+    {"id": 1147, "name": "Rune med helm", "alch": 11520, "w308_buy": 11250, "w308_sell_p2p": 11300, "short": "R Med", "members": False,
+     "skill": "Smithing", "level": 88, "xp": 75.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 1, "mat_default": 12175},
+    {"id": 1213, "name": "Rune dagger", "alch": 4800, "w308_buy": 4600, "w308_sell_p2p": 4650, "short": "R Dagger", "members": False,
+     "skill": "Smithing", "level": 85, "xp": 75.0, "mat_id": 2363, "mat_name": "Runite bar", "mat_qty": 1, "mat_default": 12175},
+    {"id": 1123, "name": "Adamant platebody", "alch": 9984, "w308_buy": 9650, "w308_sell_p2p": 9750, "short": "Addy Body", "members": False,
+     "skill": "Smithing", "level": 88, "xp": 312.5, "mat_id": 2361, "mat_name": "Adamantite bar", "mat_qty": 5, "mat_default": 1883},
+    {"id": 1121, "name": "Mithril platebody", "alch": 3120, "w308_buy": 2900, "w308_sell_p2p": 2950, "short": "Mith Body", "members": False,
+     "skill": "Smithing", "level": 68, "xp": 250.0, "mat_id": 2359, "mat_name": "Mithril bar", "mat_qty": 5, "mat_default": 956},
+    {"id": 1397, "name": "Air battlestaff", "alch": 9300, "w308_buy": 8950, "w308_sell_p2p": 9050, "short": "Air Bstaff", "members": True,
+     "skill": "Crafting", "level": 66, "xp": 137.5, "mat_id": 1391, "mat_name": "Battlestaff", "mat_qty": 1, "mat_default": 7817,
+     "mat2_id": 573, "mat2_name": "Air orb", "mat2_qty": 1, "mat2_default": 1120},
+    {"id": 1393, "name": "Fire battlestaff", "alch": 9300, "w308_buy": 8950, "w308_sell_p2p": 9050, "short": "Fire Bstaff", "members": True,
+     "skill": "Crafting", "level": 62, "xp": 125.0, "mat_id": 1391, "mat_name": "Battlestaff", "mat_qty": 1, "mat_default": 7817,
+     "mat2_id": 569, "mat2_name": "Fire orb", "mat2_qty": 1, "mat2_default": 1175},
+    {"id": 1395, "name": "Water battlestaff", "alch": 9300, "w308_buy": 8900, "w308_sell_p2p": 9000, "short": "Water Bstaff", "members": True,
+     "skill": "Crafting", "level": 54, "xp": 100.0, "mat_id": 1391, "mat_name": "Battlestaff", "mat_qty": 1, "mat_default": 7817,
+     "mat2_id": 571, "mat2_name": "Water orb", "mat2_qty": 1, "mat2_default": 800},
+    {"id": 1399, "name": "Earth battlestaff", "alch": 9300, "w308_buy": 8850, "w308_sell_p2p": 8950, "short": "Earth Bstaff", "members": True,
+     "skill": "Crafting", "level": 58, "xp": 112.5, "mat_id": 1391, "mat_name": "Battlestaff", "mat_qty": 1, "mat_default": 7817,
+     "mat2_id": 575, "mat2_name": "Earth orb", "mat2_qty": 1, "mat2_default": 800},
+    {"id": 2503, "name": "Black d'hide body", "alch": 8085, "w308_buy": 7750, "w308_sell_p2p": 7850, "short": "Black Dhide", "members": True,
+     "skill": "Crafting", "level": 84, "xp": 258.0, "mat_id": 2509, "mat_name": "Black dragon leather", "mat_qty": 3, "mat_default": 2500},
+    {"id": 2501, "name": "Red d'hide body", "alch": 6738, "w308_buy": 6450, "w308_sell_p2p": 6550, "short": "Red Dhide", "members": True,
+     "skill": "Crafting", "level": 77, "xp": 234.0, "mat_id": 2507, "mat_name": "Red dragon leather", "mat_qty": 3, "mat_default": 2100},
+    {"id": 2499, "name": "Blue d'hide body", "alch": 5616, "w308_buy": 5350, "w308_sell_p2p": 5450, "short": "Blue Dhide", "members": True,
+     "skill": "Crafting", "level": 71, "xp": 210.0, "mat_id": 2505, "mat_name": "Blue dragon leather", "mat_qty": 3, "mat_default": 1700},
+    {"id": 1135, "name": "Green d'hide body", "alch": 4680, "w308_buy": 4450, "w308_sell_p2p": 4550, "short": "Green Dhide", "members": True,
+     "skill": "Crafting", "level": 63, "xp": 186.0, "mat_id": 1745, "mat_name": "Green dragon leather", "mat_qty": 3, "mat_default": 1400},
+    {"id": 859, "name": "Magic longbow", "alch": 1536, "w308_buy": 1200, "w308_sell_p2p": 1300, "short": "Mage Long", "members": True,
+     "skill": "Fletching", "level": 85, "xp": 91.5, "mat_id": 70, "mat_name": "Magic longbow (u)", "mat_qty": 1, "mat_default": 704,
+     "mat2_id": 1777, "mat2_name": "Bow string", "mat2_qty": 1, "mat2_default": 242},
+    {"id": 855, "name": "Yew longbow", "alch": 768, "w308_buy": 600, "w308_sell_p2p": 650, "short": "Yew Long", "members": True,
+     "skill": "Fletching", "level": 70, "xp": 75.0, "mat_id": 66, "mat_name": "Yew longbow (u)", "mat_qty": 1, "mat_default": 170,
+     "mat2_id": 1777, "mat2_name": "Bow string", "mat2_qty": 1, "mat2_default": 242},
+    {"id": 11115, "name": "Dragonstone bracelet", "alch": 11475, "w308_buy": 11350, "w308_sell_p2p": 11400, "short": "Dstone Brac", "members": True,
+     "skill": "Crafting", "level": 74, "xp": 110.0, "mat_id": 1615, "mat_name": "Dragonstone", "mat_qty": 1, "mat_default": 10789,
+     "mat2_id": 2357, "mat2_name": "Gold bar", "mat2_qty": 1, "mat2_default": 69},
+    {"id": 11092, "name": "Diamond bracelet", "alch": 2295, "w308_buy": 1950, "w308_sell_p2p": 2050, "short": "Dia Brac", "members": True,
+     "skill": "Crafting", "level": 58, "xp": 95.0, "mat_id": 1601, "mat_name": "Diamond", "mat_qty": 1, "mat_default": 1575,
+     "mat2_id": 2357, "mat2_name": "Gold bar", "mat2_qty": 1, "mat2_default": 69},
+    {"id": 11085, "name": "Ruby bracelet", "alch": 1395, "w308_buy": 1100, "w308_sell_p2p": 1150, "short": "Ruby Brac", "members": True,
+     "skill": "Crafting", "level": 42, "xp": 80.0, "mat_id": 1603, "mat_name": "Ruby", "mat_qty": 1, "mat_default": 713,
+     "mat2_id": 2357, "mat2_name": "Gold bar", "mat2_qty": 1, "mat2_default": 69},
+    {"id": 1215, "name": "Dragon dagger", "alch": 18000, "w308_buy": 17300, "w308_sell_p2p": 17500, "short": "DDS", "members": True,
+     "skill": None, "level": 0, "xp": 0.0, "mat_id": None, "mat_name": None, "mat_qty": 0, "mat_default": 0},
+    {"id": 9245, "name": "Onyx bolts (e)", "alch": 9000, "w308_buy": 8550, "w308_sell_p2p": 8650, "short": "Onyx Bolts", "members": True,
+     "skill": None, "level": 0, "xp": 0.0, "mat_id": None, "mat_name": None, "mat_qty": 0, "mat_default": 0},
 ]
 
 class OSRSAlchDashboard(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("OSRS High Alchemy & Crafting Profit Dashboard")
+        self.title("AlchMate - OSRS High Alchemy & Crafting Profit Dashboard")
         self.geometry("1280x780")
         self.minsize(1020, 620)
 
@@ -781,6 +821,8 @@ class OSRSAlchDashboard(tk.Tk):
         # Clipboard copy feedback
         self.clipboard_clear_timer = None
 
+        self.bridge_port = int(self.state.config.get("bridge_port", 18833))
+
         self.setup_styles()
         self.build_ui()
 
@@ -802,30 +844,31 @@ class OSRSAlchDashboard(tk.Tk):
         # Check if app was just updated to show "What's New" popup
         self.after(800, self._check_first_run_after_update)
 
-        # Ensure plugin is deployed to .runelite/microbot-plugins if present
+        # Ensure plugin is deployed to .runelite plugin directories if present
         self._ensure_plugin_deployed()
 
-        # Bridge Server for RuneLite / Microbot live sync
+        # Bridge Server for RuneLite live sync
         self._logged_ge_offers = set()
         self._ge_cart_slots = {}
         self._ge_tracked_items = set()
+        self._ge_slot_progress = {}
 
         # Immediate sync from local container exports and active account data
         self._sync_from_container_export()
         self._apply_active_account_data()
 
-        self.bridge_server = BridgeServer(port=18833, event_callback=self._on_bridge_event_async)
+        self.bridge_port = int(self.state.config.get("bridge_port", 18833))
+        self.bridge_server = BridgeServer(port=self.bridge_port, event_callback=self._on_bridge_event_async)
         self.bridge_server.start()
 
     def _ensure_plugin_deployed(self):
-        """Ensures AlchBridgePlugin.jar is deployed into .runelite/microbot-plugins if present."""
+        """Ensures AlchBridgePlugin.jar is deployed into .runelite plugin directories if present."""
         try:
             user_home = os.path.expanduser("~")
-            dest_dir = os.path.join(user_home, ".runelite", "microbot-plugins")
-            if not os.path.exists(dest_dir):
+            runelite_dir = os.path.join(user_home, ".runelite")
+            if not os.path.exists(runelite_dir):
                 return
 
-            dest_jar = os.path.join(dest_dir, "AlchBridgePlugin.jar")
             app_dir = os.path.dirname(os.path.abspath(__file__))
             exe_dir = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, "frozen", False) else app_dir
 
@@ -835,19 +878,39 @@ class OSRSAlchDashboard(tk.Tk):
                 os.path.join(exe_dir, "bridge_plugin", "AlchBridgePlugin.jar")
             ]
 
+            valid_src = None
             for src in sources:
                 if os.path.exists(src):
-                    if not os.path.exists(dest_jar) or (os.path.getmtime(src) > os.path.getmtime(dest_jar)):
-                        shutil.copy2(src, dest_jar)
+                    valid_src = src
                     break
+
+            if not valid_src:
+                return
+
+            dest_dirs = []
+            std_plugins = os.path.join(runelite_dir, "plugins")
+            if os.path.exists(std_plugins):
+                dest_dirs.append(std_plugins)
+
+            for entry in glob.glob(os.path.join(runelite_dir, "*plugins*")):
+                if os.path.isdir(entry) and entry not in dest_dirs:
+                    dest_dirs.append(entry)
+
+            for d in dest_dirs:
+                try:
+                    dest_jar = os.path.join(d, "AlchBridgePlugin.jar")
+                    if not os.path.exists(dest_jar) or (os.path.getmtime(valid_src) > os.path.getmtime(dest_jar)):
+                        shutil.copy2(valid_src, dest_jar)
+                except Exception:
+                    pass
         except Exception:
             pass
 
         # Initial load in background thread
         self.trigger_refresh()
 
-    def _sync_from_container_export(self):
-        """Reads RuneLite/Microbot container_inventory.json and container_bank.json if available. Returns True if data changed."""
+    def _sync_from_container_export(self, force=False):
+        """Reads RuneLite container_inventory.json and container_bank.json if available. Returns True if data changed."""
         try:
             inv_path = os.path.expanduser(r"~/.runelite/Data Exports/container_inventory.json")
             if not os.path.exists(inv_path):
@@ -855,12 +918,13 @@ class OSRSAlchDashboard(tk.Tk):
 
             inv_mtime = os.path.getmtime(inv_path)
             last_mtime = getattr(self, "_last_inv_mtime", 0)
-            if inv_mtime == last_mtime:
+            if not force and inv_mtime == last_mtime:
                 return False
             self._last_inv_mtime = inv_mtime
 
             coins = None
             nats = None
+            detected_staples = {}
             with open(inv_path, "r", encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
@@ -875,6 +939,8 @@ class OSRSAlchDashboard(tk.Tk):
                             coins = qty
                         elif iid == 561 or name == "Nature rune":
                             nats = qty
+                        elif qty > 0 and (name in ("Rune 2h sword", "Rune platelegs", "Rune plateskirt", "Adamant platebody", "Rune battleaxe", "Green d'hide body", "Air battlestaff") or iid in (1320, 1080, 1094, 1124, 1374)):
+                            detected_staples[name] = {"id": iid, "qty": qty, "name": name}
                     except Exception:
                         continue
 
@@ -905,9 +971,13 @@ class OSRSAlchDashboard(tk.Tk):
             sel = self.var_account.get() if hasattr(self, "var_account") else "All Accounts"
             acc_name = sel if (sel and sel != "All Accounts") else (self.state.config.get("monitored_character") or "Default")
             if acc_name == "All Accounts":
-                acc_name = "jef112" if "jef112" in self.state.accounts else ("Default" if not self.state.accounts else max(self.state.accounts.keys()))
+                acc_name = "Default" if not self.state.accounts else sorted(list(self.state.accounts.keys()))[0]
 
             acc_data = self.state.accounts.setdefault(acc_name, {"name": acc_name})
+            # If account is actively receiving authoritative live bridge events, do not overwrite unless forced
+            if not force and (time.time() - acc_data.get("last_seen", 0)) < 60:
+                return False
+
             changed = False
 
             if coins is not None and acc_data.get("coins") != coins:
@@ -923,9 +993,16 @@ class OSRSAlchDashboard(tk.Tk):
                 acc_data["bank_nats"] = bank_nats
                 changed = True
 
-            if changed:
+            if detected_staples:
+                best_st = max(detected_staples.values(), key=lambda s: s["qty"])
+                clean_name = best_st["name"].replace(" (noted)", "")
+                acc_data["batch_item_name"] = clean_name
+                acc_data["batch_item_qty"] = best_st["qty"]
+                changed = True
+
+            if changed or force:
                 self.state.save_accounts()
-            return changed
+            return changed or force
         except Exception:
             return False
 
@@ -1120,9 +1197,10 @@ class OSRSAlchDashboard(tk.Tk):
         self.lbl_countdown.pack(side="right", padx=(0, 4))
         ToolTip(self.lbl_countdown, "Time until next automatic price sync with OSRS Wiki.")
 
-        self.lbl_bridge_status = tk.Label(p1, text="🟢 Bridge", fg="#2ecc71", bg="#252528", font=("Segoe UI", 8, "bold"))
+        self.lbl_bridge_status = tk.Label(p1, text="🟢 Bridge", fg="#2ecc71", bg="#252528", font=("Segoe UI", 8, "bold"), cursor="hand2")
         self.lbl_bridge_status.pack(side="right", padx=(2, 8))
-        ToolTip(self.lbl_bridge_status, "Microbot / RuneLite Bridge:\nListening on 127.0.0.1:18833 for live GE trades, 4h cooldown timers, coins, and nature runes.")
+        self.lbl_bridge_status.bind("<Button-1>", lambda e: self.open_bridge_settings_dialog())
+        ToolTip(self.lbl_bridge_status, f"RuneLite Bridge:\nListening on 127.0.0.1:{self.bridge_port} for live GE trades, 4h cooldown timers, coins, and nature runes.\nClick to change port, test connection, or resync.")
 
         # Expandable Filters Drawer Button
         self.show_filters_drawer = self.state.config.get("show_advanced_filters", False)
@@ -1230,6 +1308,21 @@ class OSRSAlchDashboard(tk.Tk):
         self.cb_account = ttk.Combobox(self.p2, textvariable=self.var_account, values=init_accs, width=13, state="readonly")
         self.cb_account.pack(side="left", padx=(0, 4))
         self.cb_account.bind("<<ComboboxSelected>>", self.on_account_selected)
+
+        # Bridge Port in drawer
+        tk.Label(self.p2, text="|", fg="#444444", bg="#202023").pack(side="left", padx=4)
+        tk.Label(self.p2, text="Port:", fg="#cccccc", bg="#202023", font=("Segoe UI", 8)).pack(side="left", padx=(2, 2))
+        self.ent_bridge_port = tk.Entry(self.p2, width=6, bg="#1e1e1e", fg="#2ecc71", insertbackground="#ffffff", relief="flat", justify="center")
+        self.ent_bridge_port.insert(0, str(self.bridge_port))
+        self.ent_bridge_port.pack(side="left", padx=(0, 2))
+        self.ent_bridge_port.bind("<FocusOut>", self.on_bridge_port_changed)
+        self.ent_bridge_port.bind("<Return>", self.on_bridge_port_changed)
+        ToolTip(self.ent_bridge_port, f"Bridge Server Port (Default: 18833).\nLocal port for RuneLite plugin to connect on 127.0.0.1.\nEdit and press Enter to rebind.")
+
+        btn_bridge_gear = tk.Button(self.p2, text="🔌", command=self.open_bridge_settings_dialog,
+                                    bg="#252528", fg="#f1c40f", font=("Segoe UI", 8), relief="flat", padx=3, pady=0, cursor="hand2")
+        btn_bridge_gear.pack(side="left", padx=(0, 4))
+        ToolTip(btn_bridge_gear, "Open Bridge Connection & Port Settings dialog.")
 
         # Pack drawer if enabled
         if self.show_filters_drawer:
@@ -1885,11 +1978,34 @@ class OSRSAlchDashboard(tk.Tk):
         if hasattr(self, "ent_cash"):
             try:
                 val = parse_cash_input(self.ent_cash.get())
-                if val > 0:
+                if val >= 0:
                     return val
             except Exception:
                 pass
         return self.state.config.get("cash_stack", 5000000)
+
+    def get_w308_item_material_cost(self, it):
+        """Calculates total GE raw material cost to forge/craft 1 unit of this item."""
+        if not it or not it.get("skill"):
+            return 0, "Not craftable / monster drop"
+        mat_id = it.get("mat_id")
+        if not mat_id:
+            return 0, "No raw materials required"
+        qty1 = it.get("mat_qty", 1)
+        ge1 = self.api.latest_prices.get(str(mat_id)) or self.api.latest_prices.get(mat_id) or {}
+        p1 = ge1.get("high") or ge1.get("low") or it.get("mat_default", 0)
+        total_cost = qty1 * p1
+        desc = f"{qty1}x {it.get('mat_name')} ({p1:,} ea)"
+
+        mat2_id = it.get("mat2_id")
+        if mat2_id:
+            qty2 = it.get("mat2_qty", 1)
+            ge2 = self.api.latest_prices.get(str(mat2_id)) or self.api.latest_prices.get(mat2_id) or {}
+            p2 = ge2.get("high") or ge2.get("low") or it.get("mat2_default", 0)
+            total_cost += qty2 * p2
+            desc += f" + {qty2}x {it.get('mat2_name')} ({p2:,} ea)"
+
+        return total_cost, desc
 
     def build_w308_tab(self):
         container = ttk.Frame(self.tab_w308)
@@ -1907,8 +2023,26 @@ class OSRSAlchDashboard(tk.Tk):
         tk.Label(top_row, text="🤝 World 308 'Varrock West' Bulk Trading Hub", font=("Segoe UI", 11, "bold"), fg="#f39c12", bg="#202023").pack(side="left")
         tk.Label(top_row, text="📍 W308 Varrock West Bank | Clan Guest: 'Varrock Mob'", font=("Segoe UI", 8), fg="#888888", bg="#202023").pack(side="right")
 
-        tk.Label(banner, text="Bypass the 4-hour 70-unit GE buy limit and save 2% GE tax by trading bulk noted items directly with smiths and crafters!",
-                 font=("Segoe UI", 8), fg="#cccccc", bg="#202023").pack(anchor="w", pady=(2, 4))
+        # Operating Role Switcher: Alcher / Buyer vs Smither / Crafter (Seller)
+        role_frame = tk.Frame(banner, bg="#18181a", relief="solid", borderwidth=1, padx=8, pady=3)
+        role_frame.pack(fill="x", pady=(4, 3))
+
+        tk.Label(role_frame, text="🎭 Operating Role:", font=("Segoe UI", 9, "bold"), fg="#f1c40f", bg="#18181a").pack(side="left", padx=(2, 8))
+
+        self.var_w308_role = tk.StringVar(value="buyer")
+        r_buyer = tk.Radiobutton(role_frame, text="🛒 Alcher / Buyer Mode (Buy bulk alchables at W308 benchmark prices)",
+                                 variable=self.var_w308_role, value="buyer", command=self.on_w308_role_changed,
+                                 bg="#18181a", fg="#2ecc71", selectcolor="#2d2d30", activebackground="#18181a", font=("Segoe UI", 8, "bold"))
+        r_buyer.pack(side="left", padx=4)
+
+        r_seller = tk.Radiobutton(role_frame, text="🔨 Smither / Crafter Mode (Forge items from GE materials & sell P2P bulk)",
+                                  variable=self.var_w308_role, value="seller", command=self.on_w308_role_changed,
+                                  bg="#18181a", fg="#e67e22", selectcolor="#2d2d30", activebackground="#18181a", font=("Segoe UI", 8, "bold"))
+        r_seller.pack(side="left", padx=4)
+
+        self.lbl_w308_desc = tk.Label(banner, text="Bypass the 4-hour 70-unit GE buy limit and save 2% GE tax by trading bulk noted items directly with smiths and crafters!",
+                                      font=("Segoe UI", 8), fg="#cccccc", bg="#202023")
+        self.lbl_w308_desc.pack(anchor="w", pady=(2, 4))
 
         # Live Money Stack & Top Allocation Strip
         self.w308_budget_bar = tk.Frame(banner, bg="#18181a", relief="solid", borderwidth=1, padx=8, pady=4)
@@ -1920,36 +2054,42 @@ class OSRSAlchDashboard(tk.Tk):
         self.lbl_w308_top_pick = tk.Label(self.w308_budget_bar, text="🏆 Top Stack Pick: Calculating...", font=("Segoe UI", 9), fg="#f39c12", bg="#18181a")
         self.lbl_w308_top_pick.pack(side="left", padx=(2, 10))
 
-        btn_load_top = tk.Button(self.w308_budget_bar, text="🎯 Allocate Full Stack to Top Pick", command=self.load_w308_top_pick_to_validator,
-                                 bg="#f39c12", fg="#000000", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=1, cursor="hand2")
-        btn_load_top.pack(side="right", padx=2)
-        ToolTip(btn_load_top, "Instantly loads the highest-profit bulk item into the Validator and allocates 100% of your money stack!")
+        self.btn_load_w308_top = tk.Button(self.w308_budget_bar, text="🎯 Allocate Full Stack to Top Pick", command=self.load_w308_top_pick_to_validator,
+                                           bg="#f39c12", fg="#000000", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=1, cursor="hand2")
+        self.btn_load_w308_top.pack(side="right", padx=2)
+        ToolTip(self.btn_load_w308_top, "Instantly loads the highest-profit bulk item into the Validator and allocates your active working capital!")
+
+        self.btn_w308_inv_item = tk.Button(self.w308_budget_bar, text="📦 Load Inventory Items", command=self.load_w308_inventory_staple,
+                                           bg="#2d2d30", fg="#3498db", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=1, cursor="hand2")
+        self.btn_w308_inv_item.pack(side="right", padx=4)
+        ToolTip(self.btn_w308_inv_item, "Instantly loads bulk items detected in your inventory (e.g. 340 noted Rune 2h swords) into the Trade Validator!")
 
         # Ad Buttons Row
         ad_row = tk.Frame(banner, bg="#202023")
         ad_row.pack(fill="x", pady=(2, 0))
 
-        tk.Label(ad_row, text="📢 Trade Ad Fast-Copy:", font=("Segoe UI", 8, "bold"), fg="#3498db", bg="#202023").pack(side="left", padx=(0, 6))
+        self.lbl_ad_title = tk.Label(ad_row, text="📢 Trade Ad Fast-Copy:", font=("Segoe UI", 8, "bold"), fg="#3498db", bg="#202023")
+        self.lbl_ad_title.pack(side="left", padx=(0, 6))
 
         r2h_qty = cash_stack // 37600
         r2h_lbl = f"Copy: Buying {r2h_qty:,} R2H 37.6k ea" if r2h_qty > 0 else "Copy: Buying R2H 37.6k ea"
         self.btn_ad_r2h = tk.Button(ad_row, text=r2h_lbl, command=self.copy_w308_r2h_ad,
                                     bg="#2d2d30", fg="#f1c40f", font=("Segoe UI", 8, "bold"), relief="flat", padx=6, pady=2, cursor="hand2")
         self.btn_ad_r2h.pack(side="left", padx=3)
-        ToolTip(self.btn_ad_r2h, "Click to copy bulk R2H buy offer calculated directly from your money stack.")
+        ToolTip(self.btn_ad_r2h, "Click to copy bulk R2H trade offer calculated directly from your money stack.")
 
         legs_qty = cash_stack // 37600
         legs_lbl = f"Copy: Buying {legs_qty:,} Legs/Skirts 37.6k" if legs_qty > 0 else "Copy: Buying Legs/Skirts 37.6k"
         self.btn_ad_legs = tk.Button(ad_row, text=legs_lbl, command=self.copy_w308_legs_ad,
                                      bg="#2d2d30", fg="#f1c40f", font=("Segoe UI", 8, "bold"), relief="flat", padx=6, pady=2, cursor="hand2")
         self.btn_ad_legs.pack(side="left", padx=3)
-        ToolTip(self.btn_ad_legs, "Click to copy bulk Rune legs/skirts buy offer calculated directly from your money stack.")
+        ToolTip(self.btn_ad_legs, "Click to copy bulk Rune legs/skirts trade offer calculated directly from your money stack.")
 
-        btn_ad_multi = tk.Button(ad_row, text="Copy: Multi-Item Bulk Ad",
-                                 command=lambda: self.copy_to_clipboard("Buying R2H / Legs / Skirts 37.6k | Addy Body 9.65k Bulk - Trade Me", "Copied Multi-Alch Ad to clipboard!"),
-                                 bg="#2d2d30", fg="#2ecc71", font=("Segoe UI", 8, "bold"), relief="flat", padx=6, pady=2, cursor="hand2")
-        btn_ad_multi.pack(side="left", padx=3)
-        ToolTip(btn_ad_multi, "Click to copy: 'Buying R2H / Legs / Skirts 37.6k | Addy Body 9.65k Bulk - Trade Me'")
+        self.btn_ad_multi = tk.Button(ad_row, text="Copy: Multi-Item Bulk Ad",
+                                      command=self.copy_w308_multi_ad,
+                                      bg="#2d2d30", fg="#2ecc71", font=("Segoe UI", 8, "bold"), relief="flat", padx=6, pady=2, cursor="hand2")
+        self.btn_ad_multi.pack(side="left", padx=3)
+        ToolTip(self.btn_ad_multi, "Click to copy multi-item trade advertisement to clipboard!")
 
         # W308 Filter: All | F2P Only | P2P Only
         tk.Label(ad_row, text="|", fg="#444444", bg="#202023").pack(side="left", padx=4)
@@ -1967,8 +2107,10 @@ class OSRSAlchDashboard(tk.Tk):
 
         v_head = tk.Frame(val_card, bg="#1a1a1d")
         v_head.pack(fill="x", pady=(0, 4))
-        tk.Label(v_head, text="🛡️ Anti-Scam Bulk Trade Calculator & 2nd Screen Verifier", font=("Segoe UI", 9, "bold"), fg="#e67e22", bg="#1a1a1d").pack(side="left")
-        tk.Label(v_head, text="Auto-scaled to your money stack so you never have to guess quantities or totals", font=("Segoe UI", 8, "italic"), fg="#888888", bg="#1a1a1d").pack(side="left", padx=(10, 0))
+        self.lbl_v_title = tk.Label(v_head, text="🛡️ Anti-Scam Bulk Trade Calculator & 2nd Screen Verifier", font=("Segoe UI", 9, "bold"), fg="#e67e22", bg="#1a1a1d")
+        self.lbl_v_title.pack(side="left")
+        self.lbl_v_sub = tk.Label(v_head, text="Auto-scaled to your money stack so you never have to guess quantities or totals", font=("Segoe UI", 8, "italic"), fg="#888888", bg="#1a1a1d")
+        self.lbl_v_sub.pack(side="left", padx=(10, 0))
 
         v_body = tk.Frame(val_card, bg="#1a1a1d")
         v_body.pack(fill="x")
@@ -1990,7 +2132,8 @@ class OSRSAlchDashboard(tk.Tk):
         # Price row
         r3 = tk.Frame(v_in, bg="#1a1a1d")
         r3.pack(fill="x", pady=2)
-        tk.Label(r3, text="Agreed Ea:", width=7, anchor="w", fg="#cccccc", bg="#1a1a1d", font=("Segoe UI", 8)).pack(side="left")
+        self.lbl_v_price_prompt = tk.Label(r3, text="Agreed Ea:", width=7, anchor="w", fg="#cccccc", bg="#1a1a1d", font=("Segoe UI", 8))
+        self.lbl_v_price_prompt.pack(side="left")
         first_price = W308_STAPLES[0]["w308_buy"] if W308_STAPLES else 37600
         self.ent_w308_price = tk.Entry(r3, width=8, bg="#252528", fg="#f1c40f", insertbackground="#ffffff", relief="flat")
         self.ent_w308_price.insert(0, str(first_price))
@@ -2007,20 +2150,20 @@ class OSRSAlchDashboard(tk.Tk):
         self.ent_w308_qty.pack(side="left", padx=(0, 2))
         self.ent_w308_qty.bind("<KeyRelease>", self.calculate_w308_trade_validator)
 
-        btn_max = tk.Button(r2, text="Max Cash", command=lambda: self.set_w308_validator_fraction(1.0),
-                            bg="#2d2d30", fg="#2ecc71", font=("Segoe UI", 7, "bold"), relief="flat", padx=3, pady=1, cursor="hand2")
-        btn_max.pack(side="left", padx=1)
-        ToolTip(btn_max, "Set quantity to 100% of your active money stack.")
+        self.btn_max_val = tk.Button(r2, text="Max Cash", command=lambda: self.set_w308_validator_fraction(1.0),
+                                     bg="#2d2d30", fg="#2ecc71", font=("Segoe UI", 7, "bold"), relief="flat", padx=3, pady=1, cursor="hand2")
+        self.btn_max_val.pack(side="left", padx=1)
+        ToolTip(self.btn_max_val, "Set quantity to 100% of your active capital/budget.")
 
         btn_half = tk.Button(r2, text="50%", command=lambda: self.set_w308_validator_fraction(0.5),
                              bg="#2d2d30", fg="#f39c12", font=("Segoe UI", 7, "bold"), relief="flat", padx=3, pady=1, cursor="hand2")
         btn_half.pack(side="left", padx=1)
-        ToolTip(btn_half, "Set quantity to 50% of your active money stack.")
+        ToolTip(btn_half, "Set quantity to 50% of your active capital/budget.")
 
         btn_qtr = tk.Button(r2, text="25%", command=lambda: self.set_w308_validator_fraction(0.25),
                             bg="#2d2d30", fg="#3498db", font=("Segoe UI", 7, "bold"), relief="flat", padx=3, pady=1, cursor="hand2")
         btn_qtr.pack(side="left", padx=1)
-        ToolTip(btn_qtr, "Set quantity to 25% of your active money stack.")
+        ToolTip(btn_qtr, "Set quantity to 25% of your active capital/budget.")
 
         # Results on center-right
         v_res = tk.Frame(v_body, bg="#1a1a1d")
@@ -2063,11 +2206,11 @@ class OSRSAlchDashboard(tk.Tk):
         self.btn_copy_validator_ad.pack(fill="x", pady=2)
         ToolTip(self.btn_copy_validator_ad, "Copy tailored chat trade ad with this exact quantity and price.")
 
-        btn_log_w308 = tk.Button(v_act, text="✓ Log To Session",
-                                 command=self.log_w308_trade_to_session,
-                                 bg="#27ae60", fg="#ffffff", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=2, cursor="hand2")
-        btn_log_w308.pack(fill="x", pady=2)
-        ToolTip(btn_log_w308, "Record this bulk purchase directly into your Session Tracker (no 4h GE cooldown timer added since it was a direct trade).")
+        self.btn_log_w308 = tk.Button(v_act, text="✓ Log To Session",
+                                      command=self.log_w308_trade_to_session,
+                                      bg="#27ae60", fg="#ffffff", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=2, cursor="hand2")
+        self.btn_log_w308.pack(fill="x", pady=2)
+        ToolTip(self.btn_log_w308, "Record this bulk purchase directly into your Session Tracker.")
 
         # 3. W308 Margin Sheet Table
         tree_frame = ttk.Frame(container)
@@ -2122,18 +2265,129 @@ class OSRSAlchDashboard(tk.Tk):
             "#9": "Expected Net Profit:\nTotal gold profit earned once all units are purchased and alched.",
             "#10": "Chat Ad Copy:\nReady-to-use chat spam message. Click cell to copy directly to your clipboard!"
         }
-        HeadingToolTip(self.tree_w308, w308_col_tooltips)
+        self.w308_heading_tooltip = HeadingToolTip(self.tree_w308, w308_col_tooltips)
         self.calculate_w308_trade_validator()
 
+    def on_w308_role_changed(self):
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+
+        if is_seller:
+            if hasattr(self, "lbl_w308_desc"):
+                self.lbl_w308_desc.config(
+                    text="Train Smithing & Crafting profitably! Buy raw materials on GE, forge bulk batches, and sell un-noted/noted to high alchers in W308 at premium rates!"
+                )
+            if hasattr(self, "btn_load_w308_top"):
+                self.btn_load_w308_top.config(text="🎯 Max Forge Budget on Top Pick")
+            if hasattr(self, "lbl_v_title"):
+                self.lbl_v_title.config(text="🛡️ Anti-Scam Seller Trade Calculator & Material Cost Verifier", fg="#2ecc71")
+            if hasattr(self, "lbl_v_sub"):
+                self.lbl_v_sub.config(text="Verifies buyer offers exact coins & calculates your net smithing/crafting training profit and XP")
+            if hasattr(self, "lbl_v_price_prompt"):
+                self.lbl_v_price_prompt.config(text="Agreed Sell:")
+            if hasattr(self, "btn_max_val"):
+                self.btn_max_val.config(text="Max Forge")
+            if hasattr(self, "btn_ad_multi"):
+                self.btn_ad_multi.config(text="Copy: Multi-Item Seller Ad")
+
+            seller_tooltips = {
+                "#1": "Crafted Item:\nName of the smithed or crafted bulk item. Double-click row to load into Seller Validator!",
+                "#2": "W308 Sell (ea):\nCommunity benchmark bulk sell rate in W308 (e.g. 37,875 - 37,900 for R2H).",
+                "#3": "Material Cost (ea):\nLive GE cost of raw materials required to forge/craft 1 unit (e.g. 3x Runite bars @ ~12,175 ea).",
+                "#4": "Skill & Lvl:\nSkill requirement and level required to forge or craft the item.",
+                "#5": "Profit / Ea:\nNet profit per item smithed = W308 Sell Price - GE Material Cost.",
+                "#6": "XP / Item:\nSmithing, Crafting, or Fletching experience earned per completed item.",
+                "#7": "Max Forge (Budget):\nMaximum quantity of items you can forge with your current cash/bar budget.",
+                "#8": "Total Bar Cost:\nTotal gold required to purchase raw materials on GE for the entire batch.",
+                "#9": "Net Smither Profit:\nTotal gold profit earned once the entire forged batch is sold.",
+                "#10": "Seller Ad Copy:\nReady-to-use chat advertisement for Varrock West Bank. Click cell to copy!"
+            }
+            if hasattr(self, "w308_heading_tooltip"):
+                self.w308_heading_tooltip.tooltips = seller_tooltips
+        else:
+            if hasattr(self, "lbl_w308_desc"):
+                self.lbl_w308_desc.config(
+                    text="Bypass the 4-hour 70-unit GE buy limit and save 2% GE tax by trading bulk noted items directly with smiths and crafters!"
+                )
+            if hasattr(self, "btn_load_w308_top"):
+                self.btn_load_w308_top.config(text="🎯 Allocate Full Stack to Top Pick")
+            if hasattr(self, "lbl_v_title"):
+                self.lbl_v_title.config(text="🛡️ Anti-Scam Bulk Trade Calculator & 2nd Screen Verifier", fg="#e67e22")
+            if hasattr(self, "lbl_v_sub"):
+                self.lbl_v_sub.config(text="Auto-scaled to your money stack so you never have to guess quantities or totals")
+            if hasattr(self, "lbl_v_price_prompt"):
+                self.lbl_v_price_prompt.config(text="Agreed Ea:")
+            if hasattr(self, "btn_max_val"):
+                self.btn_max_val.config(text="Max Cash")
+            if hasattr(self, "btn_ad_multi"):
+                self.btn_ad_multi.config(text="Copy: Multi-Item Bulk Ad")
+
+            buyer_tooltips = {
+                "#1": "Bulk Item:\nName of the bulk tradeable alchable item. Double-click row to load into Anti-Scam Validator!",
+                "#2": "W308 Buy (ea):\nStandard community benchmark buy price in World 308 Varrock West Bank.",
+                "#3": "GE Instant (ea):\nInstant buy (Ask) price on the Grand Exchange. Demonstrates your savings buying bulk direct!",
+                "#4": "High Alch:\nFixed gold payout per item when cast with High Alchemy.",
+                "#5": "Profit / Ea:\nNet profit per item alched = High Alch - W308 Buy - Nature Rune Cost.",
+                "#6": "Margin %:\nProfit percentage relative to your capital outlay.",
+                "#7": "Max Stack (Budget):\nMaximum quantity you can purchase with your current active cash stack without GE limits!",
+                "#8": "Total Spend:\nTotal gold required to purchase the max stack.",
+                "#9": "Expected Net Profit:\nTotal gold profit earned once all units are purchased and alched.",
+                "#10": "Chat Ad Copy:\nReady-to-use chat spam message. Click cell to copy directly to your clipboard!"
+            }
+            if hasattr(self, "w308_heading_tooltip"):
+                self.w308_heading_tooltip.tooltips = buyer_tooltips
+
+        self.update_w308_combobox_items()
+        self.on_w308_validator_item_selected()
+        self.recalculate_w308_table()
+
+    def update_w308_combobox_items(self):
+        f_val = self.var_w308_mem_filter.get() if hasattr(self, "var_w308_mem_filter") else "all"
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+
+        filtered = []
+        for it in W308_STAPLES:
+            if is_seller and not it.get("skill"):
+                continue
+            is_mem = it.get("members", False)
+            if f_val == "f2p" and is_mem:
+                continue
+            if f_val == "p2p" and not is_mem:
+                continue
+            filtered.append(it)
+
+        names = [it["name"] for it in filtered]
+        if hasattr(self, "cb_w308_item"):
+            self.cb_w308_item.config(values=names)
+            curr = self.var_w308_item.get()
+            if not curr or curr not in names:
+                if names:
+                    self.var_w308_item.set(names[0])
+
     def set_w308_validator_fraction(self, frac):
-        try:
-            price = int(self.ent_w308_price.get().strip().replace(",", ""))
-        except Exception:
-            price = 0
-        if price <= 0:
-            return
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        sel_name = self.var_w308_item.get()
+        item = next((it for it in W308_STAPLES if it["name"] == sel_name), None)
         cash = self.get_current_cash_stack()
-        target_qty = int((cash * frac) // price)
+
+        if is_seller:
+            mat_cost, _ = self.get_w308_item_material_cost(item) if item else (0, "")
+            if mat_cost <= 0:
+                try:
+                    price = int(self.ent_w308_price.get().strip().replace(",", ""))
+                except Exception:
+                    price = 0
+                target_qty = int((cash * frac) // price) if price > 0 else 1
+            else:
+                target_qty = int((cash * frac) // mat_cost)
+        else:
+            try:
+                price = int(self.ent_w308_price.get().strip().replace(",", ""))
+            except Exception:
+                price = 0
+            if price <= 0:
+                return
+            target_qty = int((cash * frac) // price)
+
         self.ent_w308_qty.delete(0, tk.END)
         self.ent_w308_qty.insert(0, str(target_qty if target_qty > 0 else 1))
         self.calculate_w308_trade_validator()
@@ -2142,6 +2396,7 @@ class OSRSAlchDashboard(tk.Tk):
         self.calculate_w308_trade_validator()
 
     def copy_w308_validator_ad(self):
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
         sel_name = self.var_w308_item.get()
         item = next((it for it in W308_STAPLES if it["name"] == sel_name), None)
         short_name = item["short"] if item else sel_name
@@ -2154,7 +2409,10 @@ class OSRSAlchDashboard(tk.Tk):
         except Exception:
             price = 0
         p_str = f"{price / 1000:.1f}k" if price % 1000 != 0 else f"{price // 1000}k"
-        ad_str = f"Buying {qty:,} {short_name} {p_str} ea Bulk - Trade Me" if qty > 0 else f"Buying {short_name} {p_str} ea Bulk - Trade Me"
+        if is_seller:
+            ad_str = f"Selling {qty:,} {short_name} {p_str} ea Bulk - Trade Me" if qty > 0 else f"Selling {short_name} {p_str} ea Bulk - Trade Me"
+        else:
+            ad_str = f"Buying {qty:,} {short_name} {p_str} ea Bulk - Trade Me" if qty > 0 else f"Buying {short_name} {p_str} ea Bulk - Trade Me"
         self.copy_to_clipboard(ad_str, f"Copied custom trade ad: '{ad_str}'")
 
     def load_w308_top_pick_to_validator(self):
@@ -2168,39 +2426,136 @@ class OSRSAlchDashboard(tk.Tk):
             self.ent_w308_qty.delete(0, tk.END)
             self.ent_w308_qty.insert(0, str(best["max_stack"]))
             self.calculate_w308_trade_validator()
-            FloatingToast(self, "Top Stack Pick Loaded", f"Allocated 100% of money stack to {best['item']} ({best['max_stack']:,} units, +{format_gp(best['expected_profit'])} profit)!", 3000)
+            is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+            if is_seller:
+                FloatingToast(self, "Top Smither Pick Loaded", f"Allocated bar budget to {best['item']} ({best['max_stack']:,} forged, +{format_gp(best['expected_profit'])} profit, +{best.get('total_xp', 0):,} XP)!", 3000)
+            else:
+                FloatingToast(self, "Top Stack Pick Loaded", f"Allocated 100% of money stack to {best['item']} ({best['max_stack']:,} units, +{format_gp(best['expected_profit'])} profit)!", 3000)
+
+    def load_w308_inventory_staple(self):
+        sel_acc = self.var_account.get() if hasattr(self, "var_account") else "Default"
+        acc = self.state.accounts.get(sel_acc) or (max(self.state.accounts.values(), key=lambda a: a.get("last_seen", 0)) if self.state.accounts else {})
+        b_name = acc.get("batch_item_name", "")
+        b_qty = acc.get("batch_item_qty", 0)
+
+        # Also fallback to container inventory file directly if batch item not yet registered
+        if not b_name or b_qty <= 0:
+            try:
+                inv_path = os.path.expanduser(r"~/.runelite/Data Exports/container_inventory.json")
+                if os.path.exists(inv_path):
+                    with open(inv_path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            if not line.strip():
+                                continue
+                            itm = json.loads(line.strip())
+                            if itm.get("quantity", 0) > 0 and itm.get("name") in ("Rune 2h sword", "Rune platelegs", "Rune plateskirt", "Adamant platebody"):
+                                b_name = itm["name"]
+                                b_qty = itm["quantity"]
+                                break
+            except Exception:
+                pass
+
+        if b_name and b_qty > 0:
+            if hasattr(self, "var_w308_role"):
+                self.var_w308_role.set("seller")
+                self.on_w308_role_changed()
+
+            matched = next((it for it in W308_STAPLES if it["name"].lower() == b_name.lower()), None)
+            if matched:
+                self.var_w308_item.set(matched["name"])
+                sell_p = matched.get("w308_sell_p2p", 37875)
+                self.ent_w308_price.delete(0, tk.END)
+                self.ent_w308_price.insert(0, str(sell_p))
+                self.ent_w308_qty.delete(0, tk.END)
+                self.ent_w308_qty.insert(0, str(b_qty))
+                self.calculate_w308_trade_validator()
+                FloatingToast(self, "Inventory Bulk Item Loaded", f"Loaded {b_qty:,}x {matched['name']} from backpack into Validator (Gross: {format_gp(b_qty * sell_p)})!", 3500)
+            else:
+                self.show_status_message(f"Item {b_name} loaded into Validator.")
+        else:
+            FloatingToast(self, "Inventory Check", "No bulk trade staple items currently detected in backpack.", 3000)
 
     def copy_w308_r2h_ad(self):
         cash = self.get_current_cash_stack()
-        price = 37600
-        qty = cash // price
-        ad_str = f"Buying {qty:,} R2H 37.6k ea Bulk - Trade Me" if qty > 0 else "Buying R2H 37.6k ea Bulk - Trade Me"
-        self.copy_to_clipboard(ad_str, f"Copied R2H buy ad: '{ad_str}'")
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        item = next((it for it in W308_STAPLES if it["id"] == 1319), None)
+        if is_seller:
+            sel_acc = self.var_account.get() if hasattr(self, "var_account") else "Default"
+            acc = self.state.accounts.get(sel_acc) or (max(self.state.accounts.values(), key=lambda a: a.get("last_seen", 0)) if self.state.accounts else {})
+            inv_qty = acc.get("batch_item_qty", 0) if acc.get("batch_item_name") == "Rune 2h sword" else 0
+            if inv_qty > 0:
+                qty = inv_qty
+            else:
+                mat_cost, _ = self.get_w308_item_material_cost(item) if item else (36525, "")
+                qty = cash // mat_cost if mat_cost > 0 else 0
+            sell_p = item.get("w308_sell_p2p", 37875) if item else 37875
+            p_str = f"{sell_p / 1000:.1f}k" if sell_p % 1000 != 0 else f"{sell_p // 1000}k"
+            ad_str = f"Selling {qty:,} R2H {p_str} ea Bulk - Trade Me" if qty > 0 else f"Selling R2H {p_str} ea Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, f"Copied R2H seller ad: '{ad_str}'")
+        else:
+            price = 37600
+            qty = cash // price
+            ad_str = f"Buying {qty:,} R2H 37.6k ea Bulk - Trade Me" if qty > 0 else "Buying R2H 37.6k ea Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, f"Copied R2H buy ad: '{ad_str}'")
 
     def copy_w308_legs_ad(self):
         cash = self.get_current_cash_stack()
-        price = 37600
-        qty = cash // price
-        ad_str = f"Buying {qty:,} Rune Legs/Skirts 37.6k ea Bulk - Trade Me" if qty > 0 else "Buying Rune Legs/Skirts 37.6k ea Bulk - Trade Me"
-        self.copy_to_clipboard(ad_str, f"Copied Rune legs/skirts ad: '{ad_str}'")
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        item = next((it for it in W308_STAPLES if it["id"] == 1079), None)
+        if is_seller:
+            sel_acc = self.var_account.get() if hasattr(self, "var_account") else "Default"
+            acc = self.state.accounts.get(sel_acc) or (max(self.state.accounts.values(), key=lambda a: a.get("last_seen", 0)) if self.state.accounts else {})
+            inv_qty = acc.get("batch_item_qty", 0) if acc.get("batch_item_name") in ("Rune platelegs", "Rune plateskirt") else 0
+            if inv_qty > 0:
+                qty = inv_qty
+            else:
+                mat_cost, _ = self.get_w308_item_material_cost(item) if item else (36525, "")
+                qty = cash // mat_cost if mat_cost > 0 else 0
+            sell_p = item.get("w308_sell_p2p", 37875) if item else 37875
+            p_str = f"{sell_p / 1000:.1f}k" if sell_p % 1000 != 0 else f"{sell_p // 1000}k"
+            ad_str = f"Selling {qty:,} Rune Legs {p_str} ea Bulk - Trade Me" if qty > 0 else f"Selling Rune Legs {p_str} ea Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, f"Copied Rune legs seller ad: '{ad_str}'")
+        else:
+            price = 37600
+            qty = cash // price
+            ad_str = f"Buying {qty:,} Rune Legs/Skirts 37.6k ea Bulk - Trade Me" if qty > 0 else "Buying Rune Legs/Skirts 37.6k ea Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, f"Copied Rune legs/skirts ad: '{ad_str}'")
+
+    def copy_w308_multi_ad(self):
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        if is_seller:
+            ad_str = "Selling R2H / Legs / Skirts 37.9k | Addy Body 9.75k Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, "Copied Multi-Item Seller Ad to clipboard!")
+        else:
+            ad_str = "Buying R2H / Legs / Skirts 37.6k | Addy Body 9.65k Bulk - Trade Me"
+            self.copy_to_clipboard(ad_str, "Copied Multi-Alch Ad to clipboard!")
 
     def on_w308_validator_item_selected(self, event=None):
         sel_name = self.var_w308_item.get()
         item = next((it for it in W308_STAPLES if it["name"] == sel_name), None)
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        cash = self.get_current_cash_stack()
+
         if item:
-            price = item["w308_buy"]
+            if is_seller:
+                price = item.get("w308_sell_p2p", 37875)
+                mat_cost, _ = self.get_w308_item_material_cost(item)
+                max_qty = cash // mat_cost if mat_cost > 0 else 100
+            else:
+                price = item["w308_buy"]
+                max_qty = cash // price if price > 0 else 100
+
             self.ent_w308_price.delete(0, tk.END)
             self.ent_w308_price.insert(0, str(price))
-            # Auto calculate quantity directly based on active money stack!
-            cash = self.get_current_cash_stack()
-            max_qty = cash // price if price > 0 else 0
             self.ent_w308_qty.delete(0, tk.END)
             self.ent_w308_qty.insert(0, str(max_qty if max_qty > 0 else 100))
+
         self.calculate_w308_trade_validator()
 
     def calculate_w308_trade_validator(self, event=None):
         if not hasattr(self, "lbl_v_coins"):
             return
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
         sel_name = self.var_w308_item.get()
         item = next((it for it in W308_STAPLES if it["name"] == sel_name), None)
         alch_val = item["alch"] if item else 38400
@@ -2217,13 +2572,7 @@ class OSRSAlchDashboard(tk.Tk):
             price = 0
 
         cash_stack = self.get_current_cash_stack()
-        nat_cost = self.get_effective_nature_price()
-
         total_coins = qty * price
-        total_alch = qty * alch_val
-        total_nats = qty * nat_cost
-        net_profit = total_alch - total_coins - total_nats
-        profit_ea = (net_profit // qty) if qty > 0 else 0
 
         # Exact in-game shorthand for OSRS trade "Enter amount:" prompt (e.g. 7580k, 15m)
         if total_coins > 0:
@@ -2237,45 +2586,98 @@ class OSRSAlchDashboard(tk.Tk):
             trade_shorthand = "0"
 
         c_str = f"{total_coins / 1_000_000:.2f}M" if total_coins >= 1_000_000 else f"{total_coins:,}"
-        a_str = f"{total_alch / 1_000_000:.2f}M" if total_alch >= 1_000_000 else f"{total_alch:,}"
+        p_ad = f"{price / 1000:.1f}k" if price % 1000 != 0 else f"{price // 1000}k"
 
-        self.lbl_v_coins.config(text=f"Coins To Give: {total_coins:,} gp (Type: {trade_shorthand})")
-        self.lbl_v_alch.config(text=f"High Alch: {total_alch:,} gp ({a_str})")
-        self.lbl_v_nat.config(text=f"Nature Cost: {total_nats:,} gp ({qty:,} @ {nat_cost} ea)")
+        if is_seller:
+            mat_cost_ea, mat_desc = self.get_w308_item_material_cost(item) if item else (0, "")
+            total_mat_cost = qty * mat_cost_ea
+            net_profit = total_coins - total_mat_cost
+            profit_ea = (net_profit // qty) if qty > 0 else 0
+            margin_pct = (profit_ea / mat_cost_ea * 100.0) if mat_cost_ea > 0 else 0.0
+            xp_ea = item.get("xp", 0.0) if item else 0.0
+            total_xp = int(qty * xp_ea)
+            skill = item.get("skill", "Smithing") if item else "Smithing"
 
-        prof_color = "#2ecc71" if net_profit >= 0 else "#e74c3c"
-        self.lbl_v_profit.config(text=f"Net Profit: {net_profit:+,} gp ({profit_ea:+,}/ea)", fg=prof_color)
+            self.lbl_v_coins.config(text=f"Coins To Receive: {total_coins:,} gp ({c_str})")
+            self.lbl_v_alch.config(text=f"GE Material Cost: {total_mat_cost:,} gp ({mat_cost_ea:,}/ea)")
+            self.lbl_v_nat.config(text=f"Training XP: +{total_xp:,} {skill} XP (+{xp_ea:.1f}/ea)")
 
-        # Budget Check & Remaining Cash Display
-        remaining_cash = cash_stack - total_coins
-        if hasattr(self, "lbl_v_budget_status"):
-            if remaining_cash >= 0:
-                rem_str = f"{remaining_cash / 1_000_000:.2f}M" if remaining_cash >= 1_000_000 else f"{remaining_cash:,}"
-                self.lbl_v_budget_status.config(
-                    text=f"🪙 Money Stack: {format_gp(cash_stack)} | Remaining Change: {remaining_cash:,} gp ({rem_str})",
-                    fg="#2ecc71"
-                )
-            else:
-                over = abs(remaining_cash)
-                self.lbl_v_budget_status.config(
-                    text=f"⚠️ Over Budget by {over:,} gp! (Your stack: {format_gp(cash_stack)})",
-                    fg="#e74c3c"
-                )
+            prof_color = "#2ecc71" if net_profit >= 0 else "#e74c3c"
+            self.lbl_v_profit.config(text=f"Net Smither Profit: {net_profit:+,} gp ({profit_ea:+,}/ea, {margin_pct:.1f}%)", fg=prof_color)
 
-        self.lbl_v_warning.config(
-            text=f"⌨️ Trade Screen: Offer-X Coins ➔ Type '{trade_shorthand}' (Enter) | Verify: {qty:,} noted {sel_name}"
-        )
-        self.btn_copy_coins.config(
-            text=f"⌨️ Type: {trade_shorthand}",
-            command=lambda: self.on_click_copy_trade_coins(trade_shorthand, total_coins)
-        )
-        if hasattr(self, "btn_copy_validator_ad"):
-            p_ad = f"{price / 1000:.1f}k" if price % 1000 != 0 else f"{price // 1000}k"
-            ad_text = f"Buying {qty:,} {short_name} {p_ad} ea Bulk - Trade Me" if qty > 0 else f"Buying {short_name} {p_ad} ea Bulk - Trade Me"
-            self.btn_copy_validator_ad.config(
-                text="📢 Copy Custom Ad",
-                command=lambda: self.copy_to_clipboard(ad_text, f"Copied trade ad: '{ad_text}'")
+            # Working capital / material budget check
+            rem_budget = cash_stack - total_mat_cost
+            if hasattr(self, "lbl_v_budget_status"):
+                if rem_budget >= 0:
+                    self.lbl_v_budget_status.config(
+                        text=f"🪙 Bar Budget: {format_gp(cash_stack)} | Material Outlay: {total_mat_cost:,} gp | Surplus: {rem_budget:,} gp",
+                        fg="#2ecc71"
+                    )
+                else:
+                    deficit = abs(rem_budget)
+                    self.lbl_v_budget_status.config(
+                        text=f"⚠️ Over Budget by {deficit:,} gp! (Need {total_mat_cost:,} gp for materials, have {format_gp(cash_stack)})",
+                        fg="#e74c3c"
+                    )
+
+            self.lbl_v_warning.config(
+                text=f"🛡️ 2nd Trade Screen: Offer {qty:,} noted {sel_name} | VERIFY BUYER OFFERS EXACTLY {total_coins:,} gp (Type: {trade_shorthand})!"
             )
+            self.btn_copy_coins.config(
+                text=f"🛡️ Verify: {trade_shorthand}",
+                command=lambda: self.on_click_verify_seller_coins(trade_shorthand, total_coins, qty, sel_name)
+            )
+            if hasattr(self, "btn_copy_validator_ad"):
+                ad_text = f"Selling {qty:,} {short_name} {p_ad} ea Bulk - Trade Me" if qty > 0 else f"Selling {short_name} {p_ad} ea Bulk - Trade Me"
+                self.btn_copy_validator_ad.config(
+                    text="📢 Copy Seller Ad",
+                    command=lambda: self.copy_to_clipboard(ad_text, f"Copied seller trade ad: '{ad_text}'")
+                )
+        else:
+            nat_cost = self.get_effective_nature_price()
+            total_alch = qty * alch_val
+            total_nats = qty * nat_cost
+            net_profit = total_alch - total_coins - total_nats
+            profit_ea = (net_profit // qty) if qty > 0 else 0
+
+            a_str = f"{total_alch / 1_000_000:.2f}M" if total_alch >= 1_000_000 else f"{total_alch:,}"
+
+            self.lbl_v_coins.config(text=f"Coins To Give: {total_coins:,} gp (Type: {trade_shorthand})")
+            self.lbl_v_alch.config(text=f"High Alch: {total_alch:,} gp ({a_str})")
+            self.lbl_v_nat.config(text=f"Nature Cost: {total_nats:,} gp ({qty:,} @ {nat_cost} ea)")
+
+            prof_color = "#2ecc71" if net_profit >= 0 else "#e74c3c"
+            self.lbl_v_profit.config(text=f"Net Profit: {net_profit:+,} gp ({profit_ea:+,}/ea)", fg=prof_color)
+
+            # Budget Check & Remaining Cash Display
+            remaining_cash = cash_stack - total_coins
+            if hasattr(self, "lbl_v_budget_status"):
+                if remaining_cash >= 0:
+                    rem_str = f"{remaining_cash / 1_000_000:.2f}M" if remaining_cash >= 1_000_000 else f"{remaining_cash:,}"
+                    self.lbl_v_budget_status.config(
+                        text=f"🪙 Money Stack: {format_gp(cash_stack)} | Remaining Change: {remaining_cash:,} gp ({rem_str})",
+                        fg="#2ecc71"
+                    )
+                else:
+                    over = abs(remaining_cash)
+                    self.lbl_v_budget_status.config(
+                        text=f"⚠️ Over Budget by {over:,} gp! (Your stack: {format_gp(cash_stack)})",
+                        fg="#e74c3c"
+                    )
+
+            self.lbl_v_warning.config(
+                text=f"⌨️ Trade Screen: Offer-X Coins ➔ Type '{trade_shorthand}' (Enter) | Verify: {qty:,} noted {sel_name}"
+            )
+            self.btn_copy_coins.config(
+                text=f"⌨️ Type: {trade_shorthand}",
+                command=lambda: self.on_click_copy_trade_coins(trade_shorthand, total_coins)
+            )
+            if hasattr(self, "btn_copy_validator_ad"):
+                ad_text = f"Buying {qty:,} {short_name} {p_ad} ea Bulk - Trade Me" if qty > 0 else f"Buying {short_name} {p_ad} ea Bulk - Trade Me"
+                self.btn_copy_validator_ad.config(
+                    text="📢 Copy Custom Ad",
+                    command=lambda: self.copy_to_clipboard(ad_text, f"Copied trade ad: '{ad_text}'")
+                )
 
     def on_click_copy_trade_coins(self, shorthand, total_coins):
         self.copy_to_clipboard(shorthand, f"Offer-X: Type '{shorthand}' in Trade Screen ({total_coins:,} gp)")
@@ -2284,6 +2686,15 @@ class OSRSAlchDashboard(tk.Tk):
             "OSRS Trade Amount",
             f"⌨️ In OSRS Trade Screen:\n1. Right-click Coins ➔ Offer-X\n2. Type '{shorthand}' and hit Enter!\n(OSRS automatically enters {total_coins:,} gp)",
             3500
+        )
+
+    def on_click_verify_seller_coins(self, shorthand, total_coins, qty, item_name):
+        self.copy_to_clipboard(str(total_coins), f"Copied exact coin total: {total_coins:,} gp")
+        FloatingToast(
+            self,
+            "Anti-Scam 2nd Screen Verification",
+            f"🛡️ Before Accepting Trade:\n1. Verify other player placed: {total_coins:,} gp ({shorthand})\n2. Verify you are offering: {qty:,} noted {item_name}\n3. Watch for flashing exclamation marks indicating trade alterations!",
+            4000
         )
 
     def log_w308_trade_to_session(self):
@@ -2303,23 +2714,39 @@ class OSRSAlchDashboard(tk.Tk):
             messagebox.showerror("Invalid Input", "Quantity and price must be greater than zero.")
             return
 
-        nat_cost = self.get_effective_nature_price()
         active_acc = getattr(self.state, "active_account", "Default")
         if not active_acc or active_acc in ("All", "All Accounts"):
             active_acc = self.var_account.get() if getattr(self, "var_account", None) and self.var_account.get() != "All Accounts" else "Default"
 
-        self.state.log_alch_batch(
-            item_id=item["id"],
-            item_name=item["name"],
-            qty=qty,
-            buy_price=price,
-            nat_price=nat_cost,
-            alch_val=item["alch"],
-            account=active_acc
-        )
-        self.update_session_display()
-        total_profit = (item["alch"] - (price + nat_cost)) * qty
-        FloatingToast(self, "W308 Trade Logged", f"Logged {qty:,}x {item['name']} ({total_profit:+,} gp realized profit) to Session Tracker!", 4000)
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        if is_seller:
+            mat_cost_ea, _ = self.get_w308_item_material_cost(item)
+            net_profit = (price - mat_cost_ea) * qty
+            self.state.log_trade_flip(
+                item_id=item["id"],
+                item_name=f"{item['name']} (Forged/Crafted)",
+                qty=qty,
+                buy_price=mat_cost_ea,
+                sell_price=price,
+                profit=net_profit,
+                account=active_acc
+            )
+            self.update_session_display()
+            FloatingToast(self, "W308 Smither Trade Logged", f"Logged {qty:,}x {item['name']} ({net_profit:+,} gp realized profit) to Session Tracker!", 4000)
+        else:
+            nat_cost = self.get_effective_nature_price()
+            self.state.log_alch_batch(
+                item_id=item["id"],
+                item_name=item["name"],
+                qty=qty,
+                buy_price=price,
+                nat_price=nat_cost,
+                alch_val=item["alch"],
+                account=active_acc
+            )
+            self.update_session_display()
+            total_profit = (item["alch"] - (price + nat_cost)) * qty
+            FloatingToast(self, "W308 Trade Logged", f"Logged {qty:,}x {item['name']} ({total_profit:+,} gp realized profit) to Session Tracker!", 4000)
 
     def toggle_sort_w308(self, col):
         if getattr(self, "w308_sort_col", None) == col:
@@ -2330,25 +2757,15 @@ class OSRSAlchDashboard(tk.Tk):
         self.recalculate_w308_table()
 
     def on_w308_mem_filter_changed(self):
-        f_val = self.var_w308_mem_filter.get() if hasattr(self, "var_w308_mem_filter") else "all"
-        filtered = [
-            it for it in W308_STAPLES
-            if f_val == "all"
-            or (f_val == "f2p" and not it.get("members", False))
-            or (f_val == "p2p" and it.get("members", False))
-        ]
-        names = [it["name"] for it in filtered]
-        if hasattr(self, "cb_w308_item"):
-            self.cb_w308_item.config(values=names)
-            if names and self.var_w308_item.get() not in names:
-                self.var_w308_item.set(names[0])
-                self.on_w308_validator_item_selected()
+        self.update_w308_combobox_items()
+        self.on_w308_validator_item_selected()
         self.recalculate_w308_table()
 
     def recalculate_w308_table(self):
         if not hasattr(self, "tree_w308"):
             return
 
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
         nat_cost = self.get_effective_nature_price()
         cash_stack = self.get_current_cash_stack()
         search_query = self.ent_search.get().strip().lower() if hasattr(self, "ent_search") else ""
@@ -2356,69 +2773,129 @@ class OSRSAlchDashboard(tk.Tk):
         f_mode = mem_filter.get() if mem_filter else "all"
 
         rows = []
-        for it in W308_STAPLES:
-            is_mem = it.get("members", False)
-            if f_mode == "f2p" and is_mem:
-                continue
-            if f_mode == "p2p" and not is_mem:
-                continue
-            item_name = it["name"]
-            if search_query and search_query not in item_name.lower():
-                continue
+        if is_seller:
+            for it in W308_STAPLES:
+                if not it.get("skill"):
+                    continue
+                is_mem = it.get("members", False)
+                if f_mode == "f2p" and is_mem:
+                    continue
+                if f_mode == "p2p" and not is_mem:
+                    continue
+                item_name = it["name"]
+                if search_query and search_query not in item_name.lower():
+                    continue
 
-            item_id = it["id"]
-            alch_val = it["alch"]
-            w308_buy = it["w308_buy"]
+                item_id = it["id"]
+                w308_sell = it.get("w308_sell_p2p", 37875)
+                mat_cost_ea, _ = self.get_w308_item_material_cost(it)
 
-            # GE Instant price from API if present
-            ge_data = self.api.latest_prices.get(str(item_id)) or self.api.latest_prices.get(item_id) or {}
-            ge_instant = ge_data.get("high") or ge_data.get("low") or w308_buy
+                profit_ea = w308_sell - mat_cost_ea
+                margin_pct = (profit_ea / mat_cost_ea * 100.0) if mat_cost_ea > 0 else 0.0
+                max_forge = (cash_stack // mat_cost_ea) if mat_cost_ea > 0 else 0
+                total_spend = max_forge * mat_cost_ea
+                expected_profit = max_forge * profit_ea
+                xp_ea = it.get("xp", 0.0)
+                skill_lvl = f"{it.get('skill', '')} {it.get('level', '')}"
+                p_str = f"{w308_sell / 1000:.1f}k" if w308_sell % 1000 != 0 else f"{w308_sell // 1000}k"
+                chat_ad = f"Selling {it['short']} {p_str} ea Bulk - Trade Me"
 
-            profit_ea = alch_val - (w308_buy + nat_cost)
-            margin_pct = (profit_ea / w308_buy * 100.0) if w308_buy > 0 else 0.0
-            max_stack = (cash_stack // w308_buy) if w308_buy > 0 else 0
-            total_spend = max_stack * w308_buy
-            expected_profit = max_stack * profit_ea
-            chat_ad = f"Buying {it['short']} {it['w308_buy']/1000:.1f}k ea Bulk - Trade Me"
+                rows.append({
+                    "id": item_id,
+                    "item": item_name,
+                    "w308_price": w308_sell,
+                    "ge_instant": mat_cost_ea,
+                    "alch_val": skill_lvl,
+                    "profit_ea": profit_ea,
+                    "margin_pct": margin_pct,
+                    "max_stack": max_forge,
+                    "total_spend": total_spend,
+                    "expected_profit": expected_profit,
+                    "chat_ad": chat_ad,
+                    "short": it["short"],
+                    "xp_ea": xp_ea,
+                    "total_xp": int(max_forge * xp_ea)
+                })
+        else:
+            for it in W308_STAPLES:
+                is_mem = it.get("members", False)
+                if f_mode == "f2p" and is_mem:
+                    continue
+                if f_mode == "p2p" and not is_mem:
+                    continue
+                item_name = it["name"]
+                if search_query and search_query not in item_name.lower():
+                    continue
 
-            rows.append({
-                "id": item_id,
-                "item": item_name,
-                "w308_price": w308_buy,
-                "ge_instant": ge_instant,
-                "alch_val": alch_val,
-                "profit_ea": profit_ea,
-                "margin_pct": margin_pct,
-                "max_stack": max_stack,
-                "total_spend": total_spend,
-                "expected_profit": expected_profit,
-                "chat_ad": chat_ad,
-                "short": it["short"]
-            })
+                item_id = it["id"]
+                alch_val = it["alch"]
+                w308_buy = it["w308_buy"]
+
+                # GE Instant price from API if present
+                ge_data = self.api.latest_prices.get(str(item_id)) or self.api.latest_prices.get(item_id) or {}
+                ge_instant = ge_data.get("high") or ge_data.get("low") or w308_buy
+
+                profit_ea = alch_val - (w308_buy + nat_cost)
+                margin_pct = (profit_ea / w308_buy * 100.0) if w308_buy > 0 else 0.0
+                max_stack = (cash_stack // w308_buy) if w308_buy > 0 else 0
+                total_spend = max_stack * w308_buy
+                expected_profit = max_stack * profit_ea
+                p_str = f"{w308_buy / 1000:.1f}k" if w308_buy % 1000 != 0 else f"{w308_buy // 1000}k"
+                chat_ad = f"Buying {it['short']} {p_str} ea Bulk - Trade Me"
+
+                rows.append({
+                    "id": item_id,
+                    "item": item_name,
+                    "w308_price": w308_buy,
+                    "ge_instant": ge_instant,
+                    "alch_val": alch_val,
+                    "profit_ea": profit_ea,
+                    "margin_pct": margin_pct,
+                    "max_stack": max_stack,
+                    "total_spend": total_spend,
+                    "expected_profit": expected_profit,
+                    "chat_ad": chat_ad,
+                    "short": it["short"]
+                })
 
         self.w308_rows = rows
 
         # Sort
         col = getattr(self, "w308_sort_col", "profit_ea")
         desc = getattr(self, "w308_sort_desc", True)
-        if col in ("item", "chat_ad"):
-            self.w308_rows.sort(key=lambda r: r[col].lower(), reverse=desc)
+        if col in ("item", "chat_ad", "alch_val"):
+            self.w308_rows.sort(key=lambda r: str(r.get(col, "")).lower(), reverse=desc)
         else:
             self.w308_rows.sort(key=lambda r: r.get(col, 0), reverse=desc)
 
         # Update headings
-        col_names = {
-            "item": "Bulk Item",
-            "w308_price": "W308 Buy (ea)",
-            "ge_instant": "GE Instant (ea)",
-            "alch_val": "High Alch",
-            "profit_ea": "Profit / Ea",
-            "margin_pct": "Margin %",
-            "max_stack": "Max Stack (Budget)",
-            "total_spend": "Total Spend",
-            "expected_profit": "Expected Net Profit",
-            "chat_ad": "Chat Ad Copy"
-        }
+        if is_seller:
+            col_names = {
+                "item": "Crafted Item",
+                "w308_price": "W308 Sell (ea)",
+                "ge_instant": "Material Cost (ea)",
+                "alch_val": "Skill & Lvl",
+                "profit_ea": "Profit / Ea",
+                "margin_pct": "XP / Item",
+                "max_stack": "Max Forge (Budget)",
+                "total_spend": "Total Bar Cost",
+                "expected_profit": "Net Smither Profit",
+                "chat_ad": "Seller Ad Copy"
+            }
+        else:
+            col_names = {
+                "item": "Bulk Item",
+                "w308_price": "W308 Buy (ea)",
+                "ge_instant": "GE Instant (ea)",
+                "alch_val": "High Alch",
+                "profit_ea": "Profit / Ea",
+                "margin_pct": "Margin %",
+                "max_stack": "Max Stack (Budget)",
+                "total_spend": "Total Spend",
+                "expected_profit": "Expected Net Profit",
+                "chat_ad": "Chat Ad Copy"
+            }
+
         for col_id, base_text in col_names.items():
             if col == col_id:
                 indicator = " ▼" if desc else " ▲"
@@ -2431,13 +2908,21 @@ class OSRSAlchDashboard(tk.Tk):
         for r in self.w308_rows:
             p_ea_str = f"+{r['profit_ea']:,} gp" if r['profit_ea'] >= 0 else f"{r['profit_ea']:,} gp"
             tot_p_str = f"+{format_gp(r['expected_profit'])}" if r['expected_profit'] >= 0 else f"-{format_gp(abs(r['expected_profit']))}"
+            
+            if is_seller:
+                alch_or_skill = str(r["alch_val"])
+                margin_or_xp = f"{r.get('xp_ea', 0):.1f} XP"
+            else:
+                alch_or_skill = f"{r['alch_val']:,} gp"
+                margin_or_xp = f"{r['margin_pct']:.1f}%"
+
             self.tree_w308.insert("", "end", iid=str(r["id"]), values=(
                 r["item"],
                 f"{r['w308_price']:,} gp",
                 f"{r['ge_instant']:,} gp",
-                f"{r['alch_val']:,} gp",
+                alch_or_skill,
                 p_ea_str,
-                f"{r['margin_pct']:.1f}%",
+                margin_or_xp,
                 f"{r['max_stack']:,}",
                 format_gp(r["total_spend"]),
                 tot_p_str,
@@ -2446,20 +2931,60 @@ class OSRSAlchDashboard(tk.Tk):
 
         # Update Money Stack Allocation banner
         if hasattr(self, "lbl_w308_budget"):
-            self.lbl_w308_budget.config(text=f"💰 Active Money Stack: {format_gp(cash_stack)}")
+            if is_seller:
+                self.lbl_w308_budget.config(text=f"💰 Working Capital (Bar Budget): {format_gp(cash_stack)}")
+            else:
+                self.lbl_w308_budget.config(text=f"💰 Active Money Stack: {format_gp(cash_stack)}")
+
         if hasattr(self, "lbl_w308_top_pick") and self.w308_rows:
             best = max(self.w308_rows, key=lambda r: r.get("expected_profit", 0))
             if best and best.get("max_stack", 0) > 0:
-                self.lbl_w308_top_pick.config(
-                    text=f"🏆 Top Stack Pick: {best['max_stack']:,}x {best['item']} (+{format_gp(best['expected_profit'])} profit)"
-                )
-        # Update ad buttons with exact quantity from cash stack
+                if is_seller:
+                    self.lbl_w308_top_pick.config(
+                        text=f"🏆 Top Smither Pick: {best['max_stack']:,}x {best['item']} (+{format_gp(best['expected_profit'])} profit, +{best.get('total_xp', 0):,} XP)"
+                    )
+                else:
+                    self.lbl_w308_top_pick.config(
+                        text=f"🏆 Top Stack Pick: {best['max_stack']:,}x {best['item']} (+{format_gp(best['expected_profit'])} profit)"
+                    )
+
+        sel_acc = self.var_account.get() if hasattr(self, "var_account") else "Default"
+        acc = self.state.accounts.get(sel_acc) or (max(self.state.accounts.values(), key=lambda a: a.get("last_seen", 0)) if self.state.accounts else {})
+        b_name = acc.get("batch_item_name", "")
+        b_qty = acc.get("batch_item_qty", 0)
+
+        if hasattr(self, "btn_w308_inv_item"):
+            if b_name and b_qty > 0:
+                self.btn_w308_inv_item.config(text=f"📦 In Backpack: {b_qty:,}x {b_name}", state="normal", bg="#27ae60", fg="#ffffff")
+            else:
+                self.btn_w308_inv_item.config(text="📦 Load Inventory Items", state="normal", bg="#2d2d30", fg="#3498db")
+
+        # Update ad buttons with exact quantity from cash stack or inventory
         if hasattr(self, "btn_ad_r2h"):
-            r2h_cnt = cash_stack // 37600
-            self.btn_ad_r2h.config(text=f"Copy: Buying {r2h_cnt:,} R2H 37.6k ea" if r2h_cnt > 0 else "Copy: Buying R2H 37.6k ea")
+            r2h_item = next((it for it in W308_STAPLES if it["id"] == 1319), None)
+            if is_seller:
+                inv_r2h = b_qty if b_name == "Rune 2h sword" else 0
+                mat_cost, _ = self.get_w308_item_material_cost(r2h_item) if r2h_item else (36525, "")
+                r2h_cnt = inv_r2h if inv_r2h > 0 else (cash_stack // mat_cost if mat_cost > 0 else 0)
+                sell_p = r2h_item.get("w308_sell_p2p", 37875) if r2h_item else 37875
+                p_str = f"{sell_p / 1000:.1f}k" if sell_p % 1000 != 0 else f"{sell_p // 1000}k"
+                self.btn_ad_r2h.config(text=f"Copy: Selling {r2h_cnt:,} R2H {p_str} ea" if r2h_cnt > 0 else f"Copy: Selling R2H {p_str} ea")
+            else:
+                r2h_cnt = cash_stack // 37600
+                self.btn_ad_r2h.config(text=f"Copy: Buying {r2h_cnt:,} R2H 37.6k ea" if r2h_cnt > 0 else "Copy: Buying R2H 37.6k ea")
+
         if hasattr(self, "btn_ad_legs"):
-            legs_cnt = cash_stack // 37600
-            self.btn_ad_legs.config(text=f"Copy: Buying {legs_cnt:,} Legs/Skirts 37.6k" if legs_cnt > 0 else "Copy: Buying Legs/Skirts 37.6k")
+            legs_item = next((it for it in W308_STAPLES if it["id"] == 1079), None)
+            if is_seller:
+                inv_legs = b_qty if b_name in ("Rune platelegs", "Rune plateskirt") else 0
+                mat_cost, _ = self.get_w308_item_material_cost(legs_item) if legs_item else (36525, "")
+                legs_cnt = inv_legs if inv_legs > 0 else (cash_stack // mat_cost if mat_cost > 0 else 0)
+                sell_p = legs_item.get("w308_sell_p2p", 37875) if legs_item else 37875
+                p_str = f"{sell_p / 1000:.1f}k" if sell_p % 1000 != 0 else f"{sell_p // 1000}k"
+                self.btn_ad_legs.config(text=f"Copy: Selling {legs_cnt:,} Legs {p_str} ea" if legs_cnt > 0 else f"Copy: Selling Legs {p_str} ea")
+            else:
+                legs_cnt = cash_stack // 37600
+                self.btn_ad_legs.config(text=f"Copy: Buying {legs_cnt:,} Legs/Skirts 37.6k" if legs_cnt > 0 else "Copy: Buying Legs/Skirts 37.6k")
 
         if hasattr(self, "calculate_w308_trade_validator"):
             self.calculate_w308_trade_validator()
@@ -2476,14 +3001,18 @@ class OSRSAlchDashboard(tk.Tk):
         if not row:
             return
 
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
         if col == "#1":  # item
             self.copy_to_clipboard(row["item"], f"Copied '{row['item']}'")
         elif col == "#2":  # w308_price
-            self.copy_to_clipboard(str(row["w308_price"]), f"Copied W308 Price: {row['w308_price']:,} gp")
+            lbl = "W308 Sell Price" if is_seller else "W308 Buy Price"
+            self.copy_to_clipboard(str(row["w308_price"]), f"Copied {lbl}: {row['w308_price']:,} gp")
         elif col == "#7":  # max_stack
-            self.copy_to_clipboard(str(row["max_stack"]), f"Copied Max Stack: {row['max_stack']:,}")
+            lbl = "Max Forge" if is_seller else "Max Stack"
+            self.copy_to_clipboard(str(row["max_stack"]), f"Copied {lbl}: {row['max_stack']:,}")
         elif col == "#10":  # chat_ad
-            self.copy_to_clipboard(row["chat_ad"], f"Copied Chat Ad: '{row['chat_ad']}'")
+            lbl = "Seller Ad" if is_seller else "Chat Ad"
+            self.copy_to_clipboard(row["chat_ad"], f"Copied {lbl}: '{row['chat_ad']}'")
 
     def on_w308_double_click(self, event):
         row_id = self.tree_w308.identify_row(event.y)
@@ -2492,14 +3021,15 @@ class OSRSAlchDashboard(tk.Tk):
         row = next((r for r in self.w308_rows if str(r["id"]) == str(row_id)), None)
         if not row:
             return
-        # Auto populate Trade Validator with this item and its max stack directly from money stack!
         self.var_w308_item.set(row["item"])
         self.ent_w308_price.delete(0, tk.END)
         self.ent_w308_price.insert(0, str(row["w308_price"]))
         self.ent_w308_qty.delete(0, tk.END)
         self.ent_w308_qty.insert(0, str(row["max_stack"] if row["max_stack"] > 0 else 1))
         self.calculate_w308_trade_validator()
-        FloatingToast(self, "Trade Validator Loaded", f"Loaded {row['item']} into Anti-Scam Bulk Trade Validator with full stack allocated!", 2500)
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
+        mode_str = "Smither Mode" if is_seller else "Buyer Mode"
+        FloatingToast(self, "Trade Validator Loaded", f"Loaded {row['item']} into Trade Validator ({mode_str})!", 2500)
 
     def on_w308_right_click(self, event):
         row_id = self.tree_w308.identify_row(event.y)
@@ -2510,11 +3040,15 @@ class OSRSAlchDashboard(tk.Tk):
         if not row:
             return
 
+        is_seller = getattr(self, "var_w308_role", None) and self.var_w308_role.get() == "seller"
         menu = tk.Menu(self, tearoff=0, bg="#252528", fg="#f1f1f1", activebackground="#f39c12", activeforeground="#000000")
         menu.add_command(label=f"🛡️ Load {row['item']} into Trade Validator", command=lambda: self.on_w308_double_click(event))
-        menu.add_command(label=f"📢 Copy Chat Ad ('{row['chat_ad']}')", command=lambda: self.copy_to_clipboard(row["chat_ad"], f"Copied Chat Ad"))
-        menu.add_command(label=f"💰 Copy Buy Price ({row['w308_price']:,} gp)", command=lambda: self.copy_to_clipboard(str(row["w308_price"]), f"Copied price"))
-        menu.add_command(label=f"📦 Copy Max Stack ({row['max_stack']:,})", command=lambda: self.copy_to_clipboard(str(row["max_stack"]), f"Copied stack"))
+        ad_lbl = "Seller Ad" if is_seller else "Chat Ad"
+        menu.add_command(label=f"📢 Copy {ad_lbl} ('{row['chat_ad']}')", command=lambda: self.copy_to_clipboard(row["chat_ad"], f"Copied {ad_lbl}"))
+        price_lbl = f"Sell Price ({row['w308_price']:,} gp)" if is_seller else f"Buy Price ({row['w308_price']:,} gp)"
+        menu.add_command(label=f"💰 Copy {price_lbl}", command=lambda: self.copy_to_clipboard(str(row["w308_price"]), f"Copied price"))
+        stack_lbl = f"Max Forge ({row['max_stack']:,})" if is_seller else f"Max Stack ({row['max_stack']:,})"
+        menu.add_command(label=f"📦 Copy {stack_lbl}", command=lambda: self.copy_to_clipboard(str(row["max_stack"]), f"Copied stack"))
         menu.tk_popup(event.x_root, event.y_root)
 
     def build_bond_tab(self):
@@ -2942,6 +3476,9 @@ class OSRSAlchDashboard(tk.Tk):
         if cushion_val <= 0:
             cushion_val = 8000000
 
+        if hasattr(self, "bridge_server") and self.bridge_server:
+            self.bridge_server.set_bond_cushion(cushion_val)
+
         total_goal = bond_cost + cushion_val
         wealth = parse_cash_input(self.ent_bond_wealth.get())
 
@@ -3346,7 +3883,7 @@ class OSRSAlchDashboard(tk.Tk):
         self.ent_guide_cur_lvl.pack(side="left", padx=(0, 6))
         self.ent_guide_cur_lvl.bind("<FocusOut>", lambda e: self.on_guide_levels_changed())
         self.ent_guide_cur_lvl.bind("<Return>", lambda e: self.on_guide_levels_changed())
-        ToolTip(self.ent_guide_cur_lvl, "Your current skill level.\nAutomatically updates when logged into RuneLite / Microbot bridge, or edit manually.")
+        ToolTip(self.ent_guide_cur_lvl, "Your current skill level.\nAutomatically updates when logged into RuneLite bridge, or edit manually.")
 
         tk.Label(guide_ctrl, text="Goal Lvl:", fg="#cccccc", bg="#252528", font=("Segoe UI", 8)).pack(side="left", padx=(2, 2))
         self.ent_guide_target_lvl = tk.Entry(guide_ctrl, width=4, bg="#1e1e1e", fg="#2ecc71", relief="flat", justify="center")
@@ -5721,7 +6258,7 @@ class OSRSAlchDashboard(tk.Tk):
         btn_ge_sync_timers = tk.Button(btn_bar, text="🔄 Sync with GE", command=self.manual_ge_sync,
                                        bg="#2980b9", fg="#ffffff", font=("Segoe UI", 8, "bold"), relief="flat", padx=8, pady=4, cursor="hand2")
         btn_ge_sync_timers.pack(side="left", padx=6)
-        ToolTip(btn_ge_sync_timers, "Sync with GE:\nAuthoritatively fetch live 4-hour buy limits and trades directly from RuneLite / Microbot.")
+        ToolTip(btn_ge_sync_timers, "Sync with GE:\nAuthoritatively fetch live 4-hour buy limits and trades directly from RuneLite.")
 
         btn_del = tk.Button(btn_bar, text="🗑️ Remove Selected Timer", command=self.remove_selected_timer,
                             bg="#c0392b", fg="#ffffff", relief="flat", padx=8, pady=4, cursor="hand2")
@@ -5819,7 +6356,7 @@ class OSRSAlchDashboard(tk.Tk):
         btn_ge_sync_sess = tk.Button(session_btn_bar, text="🔄 Sync with GE", command=self.manual_ge_sync,
                                      bg="#2980b9", fg="#ffffff", font=("Segoe UI", 8, "bold"), relief="flat", padx=10, pady=4, cursor="hand2")
         btn_ge_sync_sess.pack(side="left")
-        ToolTip(btn_ge_sync_sess, "Sync with GE:\nImport any completed GE trades from RuneLite / Microbot history into this session.")
+        ToolTip(btn_ge_sync_sess, "Sync with GE:\nImport any completed GE trades from RuneLite history into this session.")
 
         btn_reset = tk.Button(session_btn_bar, text="Reset Session", command=self.reset_session,
                               bg="#7f8c8d", fg="#ffffff", relief="flat", padx=10, pady=4, cursor="hand2")
@@ -5917,7 +6454,15 @@ class OSRSAlchDashboard(tk.Tk):
             return
         self.is_fetching = True
         self.btn_refresh.config(state="disabled", text="⏳ Syncing...")
-        self.lbl_status_left.config(text="Fetching live prices from OSRS Wiki API...")
+        self.lbl_status_left.config(text="Syncing in-game state & fetching Wiki prices...")
+
+        # 1. Immediately force sync from container export
+        self._sync_from_container_export(force=True)
+        self._apply_active_account_data(force=True)
+
+        # 2. Request live account snapshot from RuneLite bridge
+        if hasattr(self, "bridge_server") and self.bridge_server:
+            self.bridge_server.request_resync()
 
         threading.Thread(target=self._worker_fetch, daemon=True).start()
 
@@ -5946,13 +6491,10 @@ class OSRSAlchDashboard(tk.Tk):
         self.lbl_nat_details.config(text=f"Ask: {ask} gp | Limit: 18,000")
 
         # Sync from container export and active account before recalculating
-        self._sync_from_container_export()
-        self._apply_active_account_data()
+        self._sync_from_container_export(force=True)
+        self._apply_active_account_data(force=True)
 
-        # Recalculate tables
-        self.recalculate_all()
-
-        # Authoritatively reconcile 4h timers and past trades from RuneLite profiles
+        # Authoritatively reconcile 4h timers and past trades from RuneLite profiles FIRST
         try:
             ge_res = self.state.sync_from_runelite_ge(self.api.mapping, self.get_effective_nature_price())
             if ge_res.get("timers_updated", 0) > 0 or ge_res.get("session_imported", 0) > 0:
@@ -5960,6 +6502,15 @@ class OSRSAlchDashboard(tk.Tk):
                 self.update_session_display()
         except Exception:
             pass
+
+        # Clean up any expired timers
+        try:
+            self.state.cleanup_expired_timers()
+        except Exception:
+            pass
+
+        # Recalculate tables with latest limits, timers, and cash stack
+        self.recalculate_all()
 
         # Check for alerts ONLY on fresh fetch!
         self._check_alerts_on_sync()
@@ -6193,7 +6744,7 @@ class OSRSAlchDashboard(tk.Tk):
     def recalculate_alch_table(self):
         nat_cost = self.get_effective_nature_price()
         strat = self.var_strat.get().split()[0]
-        cash_stack = self.state.config.get("cash_stack", 5000000)
+        cash_stack = self.get_current_cash_stack()
         max_spend = self.state.config.get("max_item_cost", 500000)
         min_vol = self.state.config.get("min_volume", 5000)
         mem_ok = self.var_members.get()
@@ -8826,7 +9377,7 @@ class OSRSAlchDashboard(tk.Tk):
             self.update_session_display()
 
     def manual_ge_sync(self):
-        """Authoritatively syncs 4-hour buy limits and past trades directly from RuneLite / Microbot."""
+        """Authoritatively syncs 4-hour buy limits and past trades directly from RuneLite."""
         try:
             res = self.state.sync_from_runelite_ge(self.api.mapping, self.get_effective_nature_price())
             self.update_timers_display()
@@ -8871,6 +9422,21 @@ class OSRSAlchDashboard(tk.Tk):
                 self._apply_active_account_data()
                 self.recalculate_all()
 
+        # Bridge connection health monitor
+        last_bridge = getattr(self, "_last_bridge_event_time", 0)
+        curr_acc = self.var_account.get() if hasattr(self, "var_account") else "Default"
+        if hasattr(self, "lbl_bridge_status"):
+            if last_bridge > 0:
+                elapsed = now - last_bridge
+                if elapsed <= 8.0:
+                    self.lbl_bridge_status.config(text=f"🟢 {curr_acc}", fg="#2ecc71")
+                elif elapsed <= 25.0:
+                    self.lbl_bridge_status.config(text=f"🟡 {curr_acc} (Delayed)", fg="#f1c40f")
+                else:
+                    self.lbl_bridge_status.config(text=f"🔴 {curr_acc} (Stale)", fg="#e74c3c")
+            else:
+                self.lbl_bridge_status.config(text="⚪ Bridge Waiting", fg="#888888")
+
         if self.state.config.get("auto_refresh_mins", 2) > 0 and not self.is_fetching:
             self.seconds_until_refresh -= 1
             if self.seconds_until_refresh <= 0:
@@ -8910,7 +9476,7 @@ class OSRSAlchDashboard(tk.Tk):
     def on_cash_changed(self, event=None):
         raw = self.ent_cash.get()
         val = parse_cash_input(raw)
-        if val > 0:
+        if val >= 0:
             self.state.config["cash_stack"] = val
             self.ent_cash.delete(0, tk.END)
             self.ent_cash.insert(0, format_gp(val))
@@ -9068,7 +9634,160 @@ class OSRSAlchDashboard(tk.Tk):
             self.state.config["price_basis"] = "5m" if "5m" in self.var_price_basis.get() else "latest"
         self.state.save_config()
 
-    # ------------------ MICROBOT / RUNELITE BRIDGE HANDLERS ------------------
+    # ------------------ RUNELITE BRIDGE HANDLERS & PORT CONFIGURATION ------------------
+
+    def on_bridge_port_changed(self, event=None):
+        """Called when the user edits the port Entry in the Settings Drawer."""
+        if not hasattr(self, "ent_bridge_port"):
+            return
+        val = self.ent_bridge_port.get().strip()
+        try:
+            port = int(val)
+            if port != self.bridge_port:
+                self.change_bridge_port(port)
+        except ValueError:
+            self.ent_bridge_port.delete(0, "end")
+            self.ent_bridge_port.insert(0, str(self.bridge_port))
+            messagebox.showwarning("Invalid Port", "Port must be an integer between 1024 and 65535.")
+
+    def change_bridge_port(self, new_port):
+        """Gracefully rebinds the bridge HTTP server to a new port and saves configuration."""
+        try:
+            new_port = int(new_port)
+            if new_port < 1024 or new_port > 65535:
+                raise ValueError("Port must be between 1024 and 65535.")
+        except Exception as e:
+            messagebox.showerror("Invalid Port", f"Please enter a valid port number between 1024 and 65535.\nError: {e}")
+            return False
+
+        if new_port == getattr(self, "bridge_port", 18833) and self.bridge_server and self.bridge_server.is_running:
+            self.show_status_message(f"Bridge already running on port {new_port}.")
+            return True
+
+        # Stop existing server
+        if hasattr(self, "bridge_server") and self.bridge_server:
+            try:
+                self.bridge_server.stop()
+            except Exception:
+                pass
+
+        self.bridge_port = new_port
+        self.state.config["bridge_port"] = new_port
+        self.state.save_config()
+
+        self.bridge_server = BridgeServer(port=self.bridge_port, event_callback=self._on_bridge_event_async)
+        success = self.bridge_server.start()
+
+        if hasattr(self, "ent_bridge_port"):
+            self.ent_bridge_port.delete(0, "end")
+            self.ent_bridge_port.insert(0, str(self.bridge_port))
+
+        if hasattr(self, "lbl_bridge_status"):
+            tooltip_txt = f"RuneLite Bridge:\nListening on 127.0.0.1:{self.bridge_port} for live GE trades, 4h cooldown timers, coins, and nature runes.\nClick to change port, test connection, or resync."
+            ToolTip(self.lbl_bridge_status, tooltip_txt)
+
+        if success:
+            self.show_status_message(f"Bridge HTTP Server started on 127.0.0.1:{self.bridge_port}")
+            FloatingToast(self, "🔌 Bridge Reconnected", f"Listening on port {self.bridge_port}")
+            return True
+        else:
+            self.show_status_message(f"Failed to bind Bridge Server on port {self.bridge_port}.")
+            messagebox.showwarning("Port Conflict", f"Could not bind to port {self.bridge_port}.\nPlease ensure another application isn't using it or try another port.")
+            return False
+
+    def open_bridge_settings_dialog(self):
+        """Opens a friendly modal dialog allowing the user to view/change the bridge port, test local connectivity, and resync."""
+        dlg = tk.Toplevel(self)
+        dlg.title("🔌 RuneLite Bridge Settings")
+        dlg.configure(bg="#1e1e1e")
+        dlg.resizable(False, False)
+        dlg.transient(self)
+        dlg.grab_set()
+
+        try:
+            x = self.winfo_rootx() + (self.winfo_width() // 2) - 220
+            y = self.winfo_rooty() + (self.winfo_height() // 2) - 170
+            dlg.geometry(f"440x340+{max(0, x)}+{max(0, y)}")
+        except Exception:
+            dlg.geometry("440x340")
+
+        # Header banner
+        header = tk.Frame(dlg, bg="#252528", padx=14, pady=10)
+        header.pack(fill="x")
+        tk.Label(header, text="🔌 RuneLite Bridge Connection", font=("Segoe UI", 11, "bold"), fg="#f39c12", bg="#252528").pack(anchor="w")
+        tk.Label(header, text="Private local communication between OSRS RuneLite & Tracker", font=("Segoe UI", 8), fg="#888888", bg="#252528").pack(anchor="w")
+
+        body = tk.Frame(dlg, bg="#1e1e1e", padx=16, pady=12)
+        body.pack(fill="both", expand=True)
+
+        is_running = bool(self.bridge_server and self.bridge_server.is_running)
+        status_txt = f"● Active (Listening on 127.0.0.1:{self.bridge_port})" if is_running else "● Inactive / Stopped"
+        status_color = "#2ecc71" if is_running else "#e74c3c"
+        lbl_status = tk.Label(body, text=status_txt, font=("Segoe UI", 9, "bold"), fg=status_color, bg="#1e1e1e")
+        lbl_status.pack(anchor="w", pady=(0, 10))
+
+        port_row = tk.Frame(body, bg="#1e1e1e")
+        port_row.pack(fill="x", pady=4)
+        tk.Label(port_row, text="Communication Port:", font=("Segoe UI", 9), fg="#cccccc", bg="#1e1e1e").pack(side="left")
+
+        ent_dlg_port = tk.Entry(port_row, width=8, bg="#252528", fg="#2ecc71", font=("Segoe UI", 10, "bold"), insertbackground="#ffffff", relief="flat", justify="center")
+        ent_dlg_port.insert(0, str(self.bridge_port))
+        ent_dlg_port.pack(side="left", padx=10)
+
+        lbl_test_result = tk.Label(body, text="", font=("Segoe UI", 8), fg="#cccccc", bg="#1e1e1e", wraplength=400, justify="left")
+        lbl_test_result.pack(anchor="w", pady=4)
+
+        def do_save_reconnect():
+            p_val = ent_dlg_port.get().strip()
+            ok = self.change_bridge_port(p_val)
+            if ok:
+                lbl_status.config(text=f"● Active (Listening on 127.0.0.1:{self.bridge_port})", fg="#2ecc71")
+                lbl_test_result.config(text=f"✅ Successfully bound and listening on port {self.bridge_port}.", fg="#2ecc71")
+            else:
+                lbl_status.config(text="● Failed to bind", fg="#e74c3c")
+                lbl_test_result.config(text="❌ Failed to bind to requested port. Try another port number.", fg="#e74c3c")
+
+        def do_test_ping():
+            p_val = ent_dlg_port.get().strip()
+            try:
+                import urllib.request
+                req = urllib.request.Request(f"http://127.0.0.1:{p_val}/api/ping", headers={"User-Agent": "OSRS-Alch-Tester"})
+                with urllib.request.urlopen(req, timeout=1.5) as resp:
+                    if resp.status == 200:
+                        lbl_test_result.config(text=f"✅ Port {p_val} responded OK! Local bridge server is healthy.", fg="#2ecc71")
+                        return
+            except Exception as ex:
+                lbl_test_result.config(text=f"⚠️ Ping check failed on port {p_val}: {ex}", fg="#f1c40f")
+
+        def do_force_resync():
+            if self.bridge_server:
+                self.bridge_server.request_resync()
+            self.manual_ge_sync()
+            lbl_test_result.config(text="🔄 Resync requested! RuneLite will broadcast full snapshot on next tick.", fg="#3498db")
+
+        btn_bar = tk.Frame(body, bg="#1e1e1e")
+        btn_bar.pack(fill="x", pady=8)
+
+        btn_apply = tk.Button(btn_bar, text="💾 Save & Rebind", command=do_save_reconnect,
+                              bg="#2ecc71", fg="#000000", font=("Segoe UI", 8, "bold"), relief="flat", padx=10, pady=3, cursor="hand2")
+        btn_apply.pack(side="left", padx=(0, 6))
+
+        btn_test = tk.Button(btn_bar, text="🧪 Test Port (Ping)", command=do_test_ping,
+                             bg="#252528", fg="#cccccc", font=("Segoe UI", 8), relief="flat", padx=8, pady=3, cursor="hand2")
+        btn_test.pack(side="left", padx=4)
+
+        btn_sync = tk.Button(btn_bar, text="🔄 Force Resync", command=do_force_resync,
+                             bg="#2980b9", fg="#ffffff", font=("Segoe UI", 8), relief="flat", padx=8, pady=3, cursor="hand2")
+        btn_sync.pack(side="left", padx=4)
+
+        note_box = tk.Frame(dlg, bg="#252528", padx=12, pady=8)
+        note_box.pack(fill="x", side="bottom")
+        note_txt = (
+            "💡 Matching Port in RuneLite:\n"
+            "If you change the port here, open RuneLite Settings (wrench icon) ➔ "
+            "search 'Alch Dashboard Bridge' ➔ set 'Dashboard Port' to match."
+        )
+        tk.Label(note_box, text=note_txt, font=("Segoe UI", 8), fg="#aaaaaa", bg="#252528", justify="left").pack(anchor="w")
 
     def _on_bridge_event_async(self, data):
         try:
@@ -9096,8 +9815,8 @@ class OSRSAlchDashboard(tk.Tk):
         if hasattr(self, "recalculate_guide_table"):
             self.recalculate_guide_table()
 
-    def _apply_active_account_data(self):
-        self._sync_from_container_export()
+    def _apply_active_account_data(self, force=False):
+        self._sync_from_container_export(force=force)
         sel = self.var_account.get() if hasattr(self, "var_account") else "All Accounts"
         target_acc = None
         if sel != "All Accounts" and sel in self.state.accounts:
@@ -9109,11 +9828,11 @@ class OSRSAlchDashboard(tk.Tk):
             if self.state.accounts:
                 total_coins = sum(acc.get("coins", 0) for acc in self.state.accounts.values())
                 total_nats = sum(acc.get("nature_runes", 0) for acc in self.state.accounts.values())
-                if total_coins > 0 and self.var_use_cash.get():
+                if self.var_use_cash.get() and hasattr(self, "ent_cash"):
                     self.ent_cash.delete(0, tk.END)
                     self.ent_cash.insert(0, format_gp(total_coins))
                     self.state.config["cash_stack"] = total_coins
-                if total_nats > 0:
+                if hasattr(self, "ent_owned_nat"):
                     self.ent_owned_nat.delete(0, tk.END)
                     self.ent_owned_nat.insert(0, str(total_nats))
                     self.state.config["owned_nature_runes"] = total_nats
@@ -9122,12 +9841,12 @@ class OSRSAlchDashboard(tk.Tk):
                 coins = target_acc.get("coins", 0)
                 nats = target_acc.get("nature_runes", 0)
 
-                if coins > 0 and self.var_use_cash.get():
+                if self.var_use_cash.get() and hasattr(self, "ent_cash"):
                     self.ent_cash.delete(0, tk.END)
                     self.ent_cash.insert(0, format_gp(coins))
                     self.state.config["cash_stack"] = coins
 
-                if nats > 0:
+                if hasattr(self, "ent_owned_nat"):
                     self.ent_owned_nat.delete(0, tk.END)
                     self.ent_owned_nat.insert(0, str(nats))
                     self.state.config["owned_nature_runes"] = nats
@@ -9200,6 +9919,7 @@ class OSRSAlchDashboard(tk.Tk):
         self.update_cart_display()
 
     def handle_bridge_event(self, data):
+        self._last_bridge_event_time = time.time()
         event_type = data.get("event")
         raw_account = data.get("account", "Default")
         if not raw_account or raw_account == "Unknown":
@@ -9238,6 +9958,7 @@ class OSRSAlchDashboard(tk.Tk):
                 }
             coins = data.get("coins")
             nats = data.get("natureRunes")
+            bank_coins = data.get("bankCoins")
             batch_gross = data.get("batchGrossGp")
             tot_wealth = data.get("totalWealth")
             b_item = data.get("batchItemName")
@@ -9245,7 +9966,7 @@ class OSRSAlchDashboard(tk.Tk):
             prof_hr = data.get("profitPerHour")
             alchs_hr = data.get("alchsPerHour")
             self.state.update_account(
-                account, coins=coins, nature_runes=nats, world=world, is_members=is_mem,
+                account, coins=coins, nature_runes=nats, bank_coins=bank_coins, world=world, is_members=is_mem,
                 levels=levels, xp={k: v for k, v in xp.items() if v is not None}, skilling=skilling,
                 batch_gross_gp=batch_gross, total_wealth=tot_wealth,
                 batch_item_name=b_item, batch_item_qty=b_qty,
@@ -9360,40 +10081,57 @@ class OSRSAlchDashboard(tk.Tk):
                     self._sync_cart_from_ge()
 
             if item_id > 0:
-                # 2. Automatically log finalized GE buy (completed or cancelled partial) to both 4h Timer and Session Tracker
-                if state in ("BOUGHT", "CANCELLED_BUY") and qty_sold > 0:
-                    finalize_key = f"{account}_{slot}_{item_id}_{qty_sold}_{state}"
-                    if finalize_key not in self._logged_ge_offers:
-                        self._logged_ge_offers.add(finalize_key)
+                # 2. Real-time incremental 4-hour limit tracking (starts immediately on first buy!)
+                if not hasattr(self, "_ge_slot_progress"):
+                    self._ge_slot_progress = {}
 
-                        # 1. 4-Hour GE Timer: Added exactly once with the true final quantity
-                        self.state.add_timer(item_id, item_name, qty_sold, account=account)
+                prev_slot_info = self._ge_slot_progress.get(slot_key, {})
+                prev_item = prev_slot_info.get("item_id", 0)
+                prev_sold = prev_slot_info.get("qty_sold", 0) if prev_item == item_id else 0
+
+                delta_sold = max(0, qty_sold - prev_sold)
+                if delta_sold > 0:
+                    self.state.add_timer(item_id, item_name, delta_sold, account=account)
+                    self.update_timers_display()
+                    self.recalculate_alch_table()
+
+                if state == "BUYING":
+                    self._ge_slot_progress[slot_key] = {"item_id": item_id, "qty_sold": qty_sold}
+                elif state in ("BOUGHT", "CANCELLED_BUY"):
+                    if slot_key in self._ge_slot_progress:
+                        del self._ge_slot_progress[slot_key]
+
+                    # Log finalized trade to Session Tracker
+                    if qty_sold > 0:
+                        finalize_key = f"{account}_{slot}_{item_id}_{qty_sold}_{state}"
+                        if finalize_key not in self._logged_ge_offers:
+                            self._logged_ge_offers.add(finalize_key)
+                            unit_buy_price = int(spent // qty_sold) if spent > 0 else int(price)
+                            nat_price = self.get_effective_nature_price()
+                            mdata = self.api.mapping.get(str(item_id), {})
+                            high_alch = mdata.get("highalch", 0)
+                            if high_alch > 0:
+                                entry = self.state.log_alch_batch(item_id, item_name, qty_sold, unit_buy_price, nat_price, high_alch, account=account, timestamp=data.get("timestamp"))
+                                self.update_session_display()
+                                tag = "Completed" if state == "BOUGHT" else "Cancelled (Partial)"
+                                if is_active:
+                                    self.lbl_status_right.config(text=f"🛒 Logged GE Buy ({tag}): {qty_sold}x {item_name} [{account}]", fg="#2ecc71")
+                                    if self.state.config.get("desktop_alerts"):
+                                        FloatingToast(self, f"🛒 GE Buy {tag} [{account}]", f"Bought {qty_sold}x {item_name} at {unit_buy_price:,} gp (Profit: +{format_gp(entry['profit'])})")
+                                else:
+                                    if self.state.config.get("desktop_alerts"):
+                                        FloatingToast(self, f"🛒 Alt GE Buy [{account}]", f"Bought {qty_sold}x {item_name} at {unit_buy_price:,} gp")
+
+                    # Reconcile authoritative 4h buy limits and trades from RuneLite without deleting live timers
+                    try:
+                        self.state.sync_from_runelite_ge(self.api.mapping, self.get_effective_nature_price())
                         self.update_timers_display()
                         self.recalculate_alch_table()
-
-                        # 2. Session Tracker: Logged exactly once with the true final quantity
-                        unit_buy_price = int(spent // qty_sold) if spent > 0 else int(price)
-                        nat_price = self.get_effective_nature_price()
-                        mdata = self.api.mapping.get(str(item_id), {})
-                        high_alch = mdata.get("highalch", 0)
-                        if high_alch > 0:
-                            entry = self.state.log_alch_batch(item_id, item_name, qty_sold, unit_buy_price, nat_price, high_alch, account=account, timestamp=data.get("timestamp"))
-                            self.update_session_display()
-                            tag = "Completed" if state == "BOUGHT" else "Cancelled (Partial)"
-                            if is_active:
-                                self.lbl_status_right.config(text=f"🛒 Logged GE Buy ({tag}): {qty_sold}x {item_name} [{account}]", fg="#2ecc71")
-                                if self.state.config.get("desktop_alerts"):
-                                    FloatingToast(self, f"🛒 GE Buy {tag} [{account}]", f"Bought {qty_sold}x {item_name} at {unit_buy_price:,} gp (Profit: +{format_gp(entry['profit'])})")
-                            else:
-                                if self.state.config.get("desktop_alerts"):
-                                    FloatingToast(self, f"🛒 Alt GE Buy [{account}]", f"Bought {qty_sold}x {item_name} at {unit_buy_price:,} gp")
-
-                        # Immediately reconcile authoritative 4h buy limits and trades from RuneLite
-                        try:
-                            self.state.sync_from_runelite_ge(self.api.mapping, self.get_effective_nature_price())
-                            self.update_timers_display()
-                        except Exception:
-                            pass
+                    except Exception:
+                        pass
+                elif state == "EMPTY":
+                    if slot_key in self._ge_slot_progress:
+                        del self._ge_slot_progress[slot_key]
 
         elif event_type == "GE_SYNC":
             try:

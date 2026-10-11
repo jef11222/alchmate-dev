@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build & packaging
+build/
+dist/
+*.exe
+bin/
+bridge_plugin/bin/
+*.class
+
+# App runtime data & personal cache
+data/
+cache/
+*.log
+*.tmp
+run.log
+
+# Environments & OS
+.env
+.venv
+env/
+venv/
+.DS_Store
+Thumbs.db

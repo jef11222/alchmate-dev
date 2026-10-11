@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.microbot.alchbridge;
+package net.runelite.client.plugins.alchbridge;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -9,7 +9,7 @@ public interface AlchBridgeConfig extends Config {
     @ConfigItem(
         keyName = "bridgePort",
         name = "Dashboard Port",
-        description = "Local port where OSRS Alch Dashboard listens (default: 18833)",
+        description = "Local port where OSRS Alch Dashboard listens (default: 18833). Communicates locally on 127.0.0.1 (localhost).",
         position = 0
     )
     default int bridgePort() {
@@ -69,11 +69,11 @@ public interface AlchBridgeConfig extends Config {
     @ConfigItem(
         keyName = "costBasisMode",
         name = "Profit Cost Basis",
-        description = "Calculate alch profit using W308 Player Trade price or Live GE price",
+        description = "Automatically detect whether item was bought via GE or P2P Player Trade, or force a specific basis",
         position = 6
     )
     default CostBasisMode costBasisMode() {
-        return CostBasisMode.W308_TRADE;
+        return CostBasisMode.AUTO_DETECT;
     }
 
     @ConfigItem(
@@ -94,5 +94,25 @@ public interface AlchBridgeConfig extends Config {
     )
     default boolean showBondTracker() {
         return true;
+    }
+
+    @ConfigItem(
+        keyName = "showStage2Cushion",
+        name = "Track Stage 2 Cushion",
+        description = "Track Stage 2 P2P operating cushion and completion ETA once Bond ticket is secured",
+        position = 9
+    )
+    default boolean showStage2Cushion() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "cushionAmount",
+        name = "Stage 2 Cushion (gp)",
+        description = "Target working capital to save after securing the Bond before entering Members (default: 5,000,000 gp)",
+        position = 10
+    )
+    default int cushionAmount() {
+        return 5000000;
     }
 }

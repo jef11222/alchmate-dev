@@ -1,4 +1,4 @@
-package net.runelite.client.plugins.microbot.alchbridge;
+package net.runelite.client.plugins.alchbridge;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,6 +24,7 @@ public class AlchBridgeOverlay extends OverlayPanel {
         setPosition(OverlayPosition.BOTTOM_RIGHT);
         setPriority(OverlayPriority.MED);
         getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Toggle Bond Tracker", "Alch Session"));
+        getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Toggle Cushion Tracker", "Alch Session"));
         getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Toggle Cost Basis", "Alch Session"));
         getMenuEntries().add(new OverlayMenuEntry(MenuAction.RUNELITE_OVERLAY, "Reset", "Alch Session"));
     }
@@ -39,7 +40,7 @@ public class AlchBridgeOverlay extends OverlayPanel {
 
         // Header Title
         panelComponent.getChildren().add(TitleComponent.builder()
-            .text("OSRS Alch Tracker")
+            .text("AlchMate")
             .color(new Color(243, 156, 18))
             .build());
 
@@ -116,12 +117,17 @@ public class AlchBridgeOverlay extends OverlayPanel {
         CostBasisMode mode = plugin.getCostBasisMode();
         String basisText;
         Color basisColor;
-        if (mode == CostBasisMode.W308_TRADE) {
+        if (mode == CostBasisMode.AUTO_DETECT) {
+            int activeId = plugin.getLastAlchedItemId();
+            String detected = (activeId > 0) ? plugin.resolveItemSource(activeId) : "Auto";
+            basisText = "Auto [" + detected + "]";
+            basisColor = new Color(129, 199, 132);
+        } else if (mode == CostBasisMode.W308_TRADE) {
             int price = plugin.getActiveW308Price();
             if (price > 0) {
-                basisText = String.format("W308 (%,d gp)", price);
+                basisText = String.format("P2P (%,d gp)", price);
             } else {
-                basisText = "W308 Trade";
+                basisText = "P2P / W308";
             }
             basisColor = new Color(255, 179, 0);
         } else {
@@ -155,37 +161,83 @@ public class AlchBridgeOverlay extends OverlayPanel {
                 .build());
         }
 
-        // Bond Progress & Live ETA (Portfolio Net Worth: Cash + Inventory Alchables)
+        // Bond & Freedom Cushion Progress (Dynamic Adaptive 2-Line HUD)
         if (plugin.isBondTrackerEnabled()) {
             long totalWealth = plugin.getTotalWealth();
             long bondPrice = plugin.getBondPrice();
-            double bondPct = bondPrice > 0 ? ((double) totalWealth / (double) bondPrice * 100.0) : 0.0;
-            String bondText;
-            Color bondColor;
-
-            if (totalWealth >= bondPrice) {
-                bondText = String.format("Ready! (%.1fM)", totalWealth / 1_000_000.0);
-                bondColor = new Color(46, 204, 113); // Bright Green
-            } else {
-                bondText = String.format("%.1fM / %.1fM (%.1f%%)", totalWealth / 1_000_000.0, bondPrice / 1_000_000.0, bondPct);
-                bondColor = bondPct >= 50.0 ? new Color(255, 193, 7) : new Color(255, 152, 0); // Gold or Orange
-            }
-
-            panelComponent.getChildren().add(LineComponent.builder()
-                .left("Bond:")
-                .right(bondText)
-                .rightColor(bondColor)
-                .build());
-
+            long cushion = plugin.getCushionAmount();
+            boolean stage2 = plugin.isStage2Enabled();
+            long totalGoal = bondPrice + (stage2 ? cushion : 0);
             long profitPerHour = plugin.getProfitPerHour();
-            if (totalWealth < bondPrice && profitPerHour > 0) {
-                long remGp = bondPrice - totalWealth;
-                double hrs = (double) remGp / (double) profitPerHour;
-                String etaText = hrs >= 24.0 ? String.format("~%.1f days", hrs / 24.0) : String.format("~%.1f hrs", hrs);
+
+            if (totalWealth < bondPrice) {
+                // Phase A: Stage 1 Accumulating
+                double bondPct = bondPrice > 0 ? ((double) totalWealth / (double) bondPrice * 100.0) : 0.0;
+                String bondText = String.format("%.1fM / %.1fM (%.1f%%)", totalWealth / 1_000_000.0, bondPrice / 1_000_000.0, bondPct);
+                Color bondColor = bondPct >= 50.0 ? new Color(255, 193, 7) : new Color(255, 152, 0); // Gold or Orange
+
                 panelComponent.getChildren().add(LineComponent.builder()
-                    .left("Bond ETA:")
-                    .right(etaText)
-                    .rightColor(new Color(186, 104, 200)) // Pastel Purple
+                    .left(stage2 ? "Bond (S1):" : "Bond:")
+                    .right(bondText)
+                    .rightColor(bondColor)
+                    .build());
+
+                if (profitPerHour > 0) {
+                    long remGp = bondPrice - totalWealth;
+                    double hrs = (double) remGp / (double) profitPerHour;
+                    String etaText = hrs >= 24.0 ? String.format("~%.1f days", hrs / 24.0) : String.format("~%.1f hrs", hrs);
+                    panelComponent.getChildren().add(LineComponent.builder()
+                        .left("Bond ETA:")
+                        .right(etaText)
+                        .rightColor(new Color(186, 104, 200)) // Pastel Purple
+                        .build());
+                } else if (stage2 && cushion > 0) {
+                    panelComponent.getChildren().add(LineComponent.builder()
+                        .left("S2 Cushion:")
+                        .right(String.format("%.1fM target", cushion / 1_000_000.0))
+                        .rightColor(new Color(170, 170, 170))
+                        .build());
+                }
+            } else if (stage2 && totalWealth < totalGoal) {
+                // Phase B: Stage 2 Cushion Accumulating (Bond ticket secured!)
+                long cushionSaved = totalWealth - bondPrice;
+                double cPct = cushion > 0 ? ((double) cushionSaved / (double) cushion * 100.0) : 0.0;
+                String cText = String.format("%.1fM / %.1fM (%.1f%%)", cushionSaved / 1_000_000.0, cushion / 1_000_000.0, cPct);
+
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Cushion (S2):")
+                    .right(cText)
+                    .rightColor(new Color(243, 156, 18)) // Amber / Orange
+                    .build());
+
+                if (profitPerHour > 0) {
+                    long remCushion = totalGoal - totalWealth;
+                    double hrs = (double) remCushion / (double) profitPerHour;
+                    String etaText = hrs >= 24.0 ? String.format("~%.1f days", hrs / 24.0) : String.format("~%.1f hrs", hrs);
+                    panelComponent.getChildren().add(LineComponent.builder()
+                        .left("P2P ETA:")
+                        .right(etaText)
+                        .rightColor(new Color(230, 126, 34)) // Warm Orange
+                        .build());
+                } else {
+                    panelComponent.getChildren().add(LineComponent.builder()
+                        .left("Bond Status:")
+                        .right(String.format("Secured! (+%.1fM)", cushionSaved / 1_000_000.0))
+                        .rightColor(new Color(46, 204, 113))
+                        .build());
+                }
+            } else {
+                // Phase C: Freedom Achieved!
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Freedom:")
+                    .right(String.format("READY! (%.1fM)", totalWealth / 1_000_000.0))
+                    .rightColor(new Color(46, 204, 113)) // Bright Green
+                    .build());
+
+                panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Status:")
+                    .right("Ready for P2P! \uD83C\uDF89")
+                    .rightColor(new Color(46, 204, 113))
                     .build());
             }
         }
